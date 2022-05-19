@@ -53,21 +53,6 @@ export default function HueController() {
     []
   );
 
-  const initialiseToDefaultScene = useCallback(
-    async (
-      apiKey: string,
-      bridgeIpAddress: string,
-      defaultSceneName: string
-    ) => {
-      const scenesData = await getScenesFromBridge(apiKey, bridgeIpAddress);
-
-      if (defaultSceneName.length) {
-        await showScene(apiKey, bridgeIpAddress, scenesData, defaultSceneName);
-      }
-    },
-    []
-  );
-
   const showScene = useCallback(
     async (
       apiKey: string,
@@ -107,7 +92,22 @@ export default function HueController() {
         console.error("Failed to set scene", sceneName);
       }
     },
-    []
+    [getScenesFromBridge]
+  );
+
+  const initialiseToDefaultScene = useCallback(
+    async (
+      apiKey: string,
+      bridgeIpAddress: string,
+      defaultSceneName: string
+    ) => {
+      const scenesData = await getScenesFromBridge(apiKey, bridgeIpAddress);
+
+      if (defaultSceneName.length) {
+        await showScene(apiKey, bridgeIpAddress, scenesData, defaultSceneName);
+      }
+    },
+    [showScene, getScenesFromBridge]
   );
 
   // Find scenes on first load
@@ -120,7 +120,7 @@ export default function HueController() {
     ) {
       initialiseToDefaultScene(apiKey, bridgeIpAddress, defaultScene);
     }
-  }, [scenes, apiKey, bridgeIpAddress, defaultScene]);
+  }, [scenes, apiKey, bridgeIpAddress, defaultScene, initialiseToDefaultScene]);
 
   useCogsEvent(connection, "Show Scene", (sceneName) => {
     showScene(apiKey, bridgeIpAddress, scenes, sceneName);
