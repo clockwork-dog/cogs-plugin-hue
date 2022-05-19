@@ -2,6 +2,7 @@ import {
   useCogsConfig,
   useCogsConnection,
   useCogsEvent,
+  useWhenShowReset,
 } from "@clockworkdog/cogs-client-react";
 import { useCallback, useEffect, useState } from "react";
 import { CogsConnectionParams } from "./App";
@@ -13,11 +14,20 @@ const getScenesUrl = (ipAddress: string, apiKey: string) =>
 const recallSceneUrl = (ipAddress: string, apiKey: string) =>
   `http://${ipAddress}/api/${apiKey}/groups/0/action`;
 
+function findSceneByName(scenes: HueScenes, sceneName: string) {
+  if (scenes) {
+    return Object.entries(scenes).find(
+      ([id, scene]) => scene.name === sceneName
+    )?.[0];
+  }
+}
+
 export default function HueController() {
   const connection = useCogsConnection<CogsConnectionParams>();
 
   const apiKey = useCogsConfig(connection)["API Key"];
   const bridgeIpAddress = useCogsConfig(connection)["Bridge IP Address"];
+  const defaultScene = useCogsConfig(connection)["Default Scene"];
 
   const [scenes, setScenes] = useState<HueScenes>();
 
@@ -43,25 +53,33 @@ export default function HueController() {
     []
   );
 
-  // Find scenes on first load
-  useEffect(() => {
-    if (apiKey?.length && bridgeIpAddress?.length) {
-      getScenesFromBridge(apiKey, bridgeIpAddress);
-    }
-  }, [apiKey, bridgeIpAddress]);
+  const initialiseToDefaultScene = useCallback(
+    async (
+      apiKey: string,
+      bridgeIpAddress: string,
+      defaultSceneName: string
+    ) => {
+      const scenesData = await getScenesFromBridge(apiKey, bridgeIpAddress);
 
-  useCogsEvent(connection, "Show Scene", (sceneName) => {
-    function findSceneByName(scenes: HueScenes) {
-      if (scenes) {
-        return Object.entries(scenes).find(
-          ([id, scene]) => scene.name === sceneName
-        )?.[0];
+      if (defaultSceneName.length) {
+        await showScene(apiKey, bridgeIpAddress, scenesData, defaultSceneName);
       }
-    }
+    },
+    []
+  );
 
-    async function showScene() {
+  const showScene = useCallback(
+    async (
+      apiKey: string,
+      bridgeIpAddress: string,
+      hueScenes: HueScenes | undefined,
+      sceneName: string
+    ) => {
+      console.log("Showing scene with name", sceneName);
       try {
-        let sceneId = scenes ? findSceneByName(scenes) : undefined;
+        let sceneId = hueScenes
+          ? findSceneByName(hueScenes, sceneName)
+          : undefined;
         console.log("Found sceneId", sceneId);
 
         // If can't find the scene, maybe we don't have the scenes yet or the scene is newly added - try and fetch again
@@ -73,7 +91,7 @@ export default function HueController() {
           );
 
           if (refreshedScenes) {
-            sceneId = findSceneByName(refreshedScenes);
+            sceneId = findSceneByName(refreshedScenes, sceneName);
             console.log("Now found sceneId", sceneId);
           }
         }
@@ -88,9 +106,28 @@ export default function HueController() {
       } catch (e) {
         console.error("Failed to set scene", sceneName);
       }
-    }
+    },
+    []
+  );
 
-    showScene();
+  // Find scenes on first load
+  useEffect(() => {
+    if (
+      !scenes &&
+      apiKey !== undefined &&
+      bridgeIpAddress !== undefined &&
+      defaultScene !== undefined
+    ) {
+      initialiseToDefaultScene(apiKey, bridgeIpAddress, defaultScene);
+    }
+  }, [scenes, apiKey, bridgeIpAddress, defaultScene]);
+
+  useCogsEvent(connection, "Show Scene", (sceneName) => {
+    showScene(apiKey, bridgeIpAddress, scenes, sceneName);
+  });
+
+  useWhenShowReset(connection, () => {
+    showScene(apiKey, bridgeIpAddress, scenes, defaultScene);
   });
 
   return null;

@@ -9,6 +9,10 @@
     {
       "name": "Bridge IP Address",
       "value": { "type": "string" }
+    },
+    {
+      "name": "Default Scene",
+      "value": { "type": "string" }
     }
   ],
   "events": {

@@ -10,7 +10,11 @@ import "./App.css";
 import HueController from "./HueController";
 
 export type CogsConnectionParams = {
-  config: { "API Key": string; "Bridge IP Address": string };
+  config: {
+    "API Key": string;
+    "Bridge IP Address": string;
+    "Default Scene": string;
+  };
   inputEvents: { "Show Scene": string };
 };
 
