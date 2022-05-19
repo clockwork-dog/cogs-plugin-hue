@@ -1064,17 +1064,17 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@clockworkdog/cogs-client-react@1.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@clockworkdog/cogs-client-react/-/cogs-client-react-1.0.0.tgz#6463b41d32ff2940ede67fdf74656ffdc910d311"
-  integrity sha512-uKHffhW6xHk9vJA3+IVC1fFaFCk0QG6gYTa4Uqq5FJEUxneGYQtkHdLsCuxr34IAYj9w6TayN+hg2C/m9ON/9A==
+"@clockworkdog/cogs-client-react@1.1":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@clockworkdog/cogs-client-react/-/cogs-client-react-1.1.0.tgz#c4968999aeedd25c6e013f4b84232667262d9ca4"
+  integrity sha512-qB3yuowL4s1OGyiFZ0Q9PKoM+gESftLv4WPecp1W1wcp8i8NrmP4BDs3Q94zoJeDVHjFgG6/1TulZeDfdeesnw==
   dependencies:
-    "@clockworkdog/cogs-client" "1.0.0"
+    "@clockworkdog/cogs-client" "^1.1.0"
 
-"@clockworkdog/cogs-client@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@clockworkdog/cogs-client/-/cogs-client-1.0.0.tgz#a0581af5422d4c26df2f07d736689ad31f7f6489"
-  integrity sha512-l1HLyIotZ9wB2tYjg1f9c4akqLwHNSBsLX9hUknHSPQDDBdD5iOMtOBc/wiEjRT5FedhBOjIe7NgFVraRmozpg==
+"@clockworkdog/cogs-client@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@clockworkdog/cogs-client/-/cogs-client-1.1.0.tgz#1fab4b69f0b712b9cab5966629d20b6a1843028c"
+  integrity sha512-7iPeECgq1ipou5GiYwW08maZRXMzCXr3EcqRTk/iHjHmzNi8cNR1LVY2/R5LeKvFwhCNHLXVWbWw1/QNLB4p0Q==
   dependencies:
     howler "2.2.1"
     reconnecting-websocket "^4.4.0"

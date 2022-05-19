@@ -1,0 +1,18 @@
+{
+  "name": "Hue Control",
+  "version": "0.1",
+  "description": "Basic Hue controller",
+  "icon": "lightbulb-on",
+  "indexPath": "build/index.html",
+  "config": [
+    { "name": "API Key", "value": { "type": "string" } },
+    {
+      "name": "Bridge IP Address",
+      "value": { "type": "string" }
+    }
+  ],
+  "events": {
+    "fromCogs": [{ "name": "Show Scene", "value": { "type": "string" } }],
+    "toCogs:": []
+  }
+}
