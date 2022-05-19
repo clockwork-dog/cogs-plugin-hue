@@ -1,0 +1,31 @@
+name: Build and publush
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        cache: 'yarn'
+    - run: yarn
+    - run: yarn build
+    - run: zip -r cogs-hue-control-plugin.zip cogs-plugin-manifest.json build
+    - uses: actions/upload-artifact@v1
+      with:
+        name: cogs-hue-control-plugin.zip
+        path: cogs-hue-control-plugin.zip
+    - uses: ncipollo/release-action@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        allowUpdates: true
+        artifacts: cogs-hue-control-plugin.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
