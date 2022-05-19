@@ -1,14 +1,25 @@
-# My custom COGS Media Master content
+# COGS Philip Hue plugin
 
-This is a [`create-react-app`](https://create-react-app.dev) Typescript project that connects to [COGS](https://cogs.show) using [`@clockworkdog/cogs-client-react`](https://www.npmjs.com/package/@clockworkdog/cogs-client-react).
+## How to use
+
+- Download the plugin from [Releases](https://github.com/clockwork-dog/cogs-plugin-hue/releases)
+- Unzip into the `plugins` folder in your COGS project
+- Got to `Setup` > `Settings` and enable `Hue Control`
+- Click the `Hue Control` icon that appears on the left
+- Set your API key and local IP address for your Philips Hue bridge
+
+You can now use the `Hue Control: Show Scene` action in your behaviours.
 
 ## Local development in a browser
 
+- Place this folder in the `client-content` folder in your COGS project.
+- Add a "Custom" Media Master call "Hue Control dev" in COGS and select the `Custom` type
+
 ```
-yarn start "My custom Media Master"
+yarn start "Hue Control dev"
 ```
 
-This will connect to COGS as a simulator for the Media Master called "My custom Media Master".
+This will connect to COGS as a simulator for the Media Master called "Hue Control dev".
 
 ## Build for your COGS project
 
@@ -16,8 +27,4 @@ This will connect to COGS as a simulator for the Media Master called "My custom 
 yarn build
 ```
 
-The `build` directory can now be used by COGS as custom Media Master content.
-
-You can place this entire project in your COGS project's `client_content` directory or, once built, you can copy the `build` directory to your COGS project's `client_content` directory. Select the built directory/subdirectory from COGS as your custom Media Master's "Content directory".
-
-![Screenshot from 2021-10-01 09-31-04](https://user-images.githubusercontent.com/292958/135590011-c3d30df6-5590-4a44-8160-f31e3cd4008e.png)
+This folder can now be used as a plugin. Place the entire folder in the `plugins` folder of your COGS project and follow the "How to use" instructions above.
