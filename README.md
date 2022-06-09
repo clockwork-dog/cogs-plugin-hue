@@ -2,9 +2,9 @@
 
 ## How to use
 
-- Download the plugin from [Releases](https://github.com/clockwork-dog/cogs-plugin-hue/releases)
+- Download the plugin from [Releases](https://github.com/clockwork-dog/cogs-plugin-hue/releases/latest)
 - Unzip into the `plugins` folder in your COGS project
-- Got to `Setup` > `Settings` and enable `Hue Control`
+- In COGS, open the project and go to `Setup` > `Settings` and enable `Hue Control`
 - Click the `Hue Control` icon that appears on the left
 - Set your API key and local IP address for your Philips Hue bridge
 
@@ -13,7 +13,8 @@ You can now use the `Hue Control: Show Scene` action in your behaviours.
 ## Local development in a browser
 
 - Place this folder in the `client-content` folder in your COGS project.
-- Add a "Custom" Media Master call "Hue Control dev" in COGS and select the `Custom` type
+- Add a "Custom" Media Master called "Hue Control dev" in COGS and select the `Custom` type
+- Select `cogs-plugin-hue/build` as the content directory
 
 ```
 yarn start "Hue Control dev"
