@@ -1,4 +1,4 @@
-# COGS Philip Hue plugin
+# COGS Philips Hue plugin
 
 ## How to use
 
