@@ -1,6 +1,6 @@
 {
   "name": "hue-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@clockworkdog/cogs-client-react": "1.1",
@@ -10,7 +10,9 @@
   },
   "scripts": {
     "start": "cross-env BROWSER=scripts/openSimulator.js PORT=3001 react-scripts start",
-    "build": "react-scripts build",
+    "build-content": "cross-env BUILD_PATH=build/dog.clockwork.hue react-scripts build",
+    "build-manifest": "mkdir -p build/dog.clockwork.hue && cp -fv cogs-plugin-manifest.json build/dog.clockwork.hue/cogs-plugin-manifest.json",
+    "build": "yarn build-content && yarn build-manifest",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
