@@ -27,9 +27,7 @@ export default function App() {
 
   const [latestScene, setLatestScene] = useState("");
 
-  useCogsEvent(connection, "Show Scene", (scene) => {
-    setLatestScene(scene);
-  });
+  useCogsEvent(connection, "Show Scene", setLatestScene);
 
   return (
     <div className="App">
