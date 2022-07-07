@@ -31,49 +31,44 @@ export default function HueController() {
 
   const [scenes, setScenes] = useState<HueScenes>();
 
-  const getScenesFromBridge = useCallback(
-    async (apiKey: string, bridgeIpAddress: string) => {
-      try {
-        const response = await fetch(getScenesUrl(bridgeIpAddress, apiKey), {
-          method: "GET",
-        });
+  const getScenesFromBridge = useCallback(async () => {
+    if (!bridgeIpAddress) {
+      console.warn("Bridge IP address not set");
+      return;
+    }
+    if (!apiKey) {
+      console.warn("API Key not set");
+      return;
+    }
+    try {
+      const response = await fetch(getScenesUrl(bridgeIpAddress, apiKey), {
+        method: "GET",
+      });
 
-        if (response.status === 200) {
-          const scenesData = (await response.json()) as HueScenes;
-          setScenes(scenesData);
-          return scenesData;
-        }
-
-        return undefined;
-      } catch (e) {
-        console.error("Error fetching Hue scenes", e);
-        return undefined;
+      if (response.status === 200) {
+        const scenesData = (await response.json()) as HueScenes;
+        setScenes(scenesData);
+        return scenesData;
       }
-    },
-    []
-  );
+
+      return undefined;
+    } catch (e) {
+      console.error("Error fetching Hue scenes", e);
+      return undefined;
+    }
+  }, [apiKey, bridgeIpAddress]);
 
   const showScene = useCallback(
-    async (
-      apiKey: string,
-      bridgeIpAddress: string,
-      hueScenes: HueScenes | undefined,
-      sceneName: string
-    ) => {
+    async (sceneName: string) => {
       console.log("Showing scene with name", sceneName);
       try {
-        let sceneId = hueScenes
-          ? findSceneByName(hueScenes, sceneName)
-          : undefined;
+        let sceneId = scenes ? findSceneByName(scenes, sceneName) : undefined;
         console.log("Found sceneId", sceneId);
 
         // If can't find the scene, maybe we don't have the scenes yet or the scene is newly added - try and fetch again
         if (!sceneId) {
           console.log("Couldn't find scene ID - fetching scenes again");
-          const refreshedScenes = await getScenesFromBridge(
-            apiKey,
-            bridgeIpAddress
-          );
+          const refreshedScenes = await getScenesFromBridge();
 
           if (refreshedScenes) {
             sceneId = findSceneByName(refreshedScenes, sceneName);
@@ -92,22 +87,12 @@ export default function HueController() {
         console.error("Failed to set scene", sceneName);
       }
     },
-    [getScenesFromBridge]
+    [getScenesFromBridge, apiKey, bridgeIpAddress, scenes]
   );
 
-  const initialiseToDefaultScene = useCallback(
-    async (
-      apiKey: string,
-      bridgeIpAddress: string,
-      defaultSceneName: string
-    ) => {
-      const scenesData = await getScenesFromBridge(apiKey, bridgeIpAddress);
-
-      if (defaultSceneName.length) {
-        await showScene(apiKey, bridgeIpAddress, scenesData, defaultSceneName);
-      }
-    },
-    [showScene, getScenesFromBridge]
+  const showDefaultScene = useCallback(
+    () => showScene(defaultScene),
+    [showScene, defaultScene]
   );
 
   // Find scenes on first load
@@ -118,17 +103,24 @@ export default function HueController() {
       bridgeIpAddress !== undefined &&
       defaultScene !== undefined
     ) {
-      initialiseToDefaultScene(apiKey, bridgeIpAddress, defaultScene);
+      getScenesFromBridge().then(() => {
+        if (defaultScene) {
+          showDefaultScene();
+        }
+      });
     }
-  }, [scenes, apiKey, bridgeIpAddress, defaultScene, initialiseToDefaultScene]);
+  }, [
+    scenes,
+    apiKey,
+    bridgeIpAddress,
+    defaultScene,
+    getScenesFromBridge,
+    showDefaultScene,
+  ]);
 
-  useCogsEvent(connection, "Show Scene", (sceneName) => {
-    showScene(apiKey, bridgeIpAddress, scenes, sceneName);
-  });
+  useCogsEvent(connection, "Show Scene", showScene);
 
-  useWhenShowReset(connection, () => {
-    showScene(apiKey, bridgeIpAddress, scenes, defaultScene);
-  });
+  useWhenShowReset(connection, showDefaultScene);
 
   return null;
 }

@@ -1,6 +1,6 @@
 {
   "name": "Hue Control",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Basic Hue controller",
   "icon": "lightbulb-on",
   "config": [
