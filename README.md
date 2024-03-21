@@ -1,5 +1,7 @@
 # COGS Philips Hue plugin
 
+DEPRECATED: Please use COGS 5 with the Zigbee plugin to use Philips Hue and other Zigbee-enabled smart home devices.
+
 ## How to use
 
 - Download the plugin from [Releases](https://github.com/clockwork-dog/cogs-plugin-hue/releases/latest)
