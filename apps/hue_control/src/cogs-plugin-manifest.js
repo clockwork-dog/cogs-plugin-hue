@@ -11,11 +11,6 @@ module.exports =
     // TODO: Check how backwards compatible we can make this
     minCogsVersion: "5.6.0",
     config: [{
-      name: "API Key",
-      value: {
-        type: "string"
-      }
-    }, {
       name: "Bridge IP Address",
       value: {
         type: "string"
@@ -37,4 +32,5 @@ module.exports =
     },
     state: [],
     media: {},
+    window: { height: 500, width: 500 }
   });

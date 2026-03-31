@@ -5,14 +5,16 @@ import {
   useWhenShowReset,
 } from "@clockworkdog/cogs-client-react";
 import { useCallback, useEffect, useState } from "react";
-import { CogsConnectionParams } from "./App";
 import { HueScenes } from "./types";
+import { useCogsDataStoreItem } from "./hooks/useCogsDataStoreItem";
+import { USERNAME_KEY_PREFIX } from "./constants";
+import { useTypedCogsConnection } from "./hooks/useTypedCogsConnection";
 
-const getScenesUrl = (ipAddress: string, apiKey: string) =>
-  `http://${ipAddress}/api/${apiKey}/scenes`;
+const getScenesUrl = (ipAddress: string, apiUsername: string) =>
+  `http://${ipAddress}/api/${apiUsername}/scenes`;
 
-const recallSceneUrl = (ipAddress: string, apiKey: string) =>
-  `http://${ipAddress}/api/${apiKey}/groups/0/action`;
+const recallSceneUrl = (ipAddress: string, apiUsername: string) =>
+  `http://${ipAddress}/api/${apiUsername}/groups/0/action`;
 
 function findSceneByName(scenes: HueScenes, sceneName: string) {
   if (scenes) {
@@ -23,10 +25,10 @@ function findSceneByName(scenes: HueScenes, sceneName: string) {
 }
 
 export default function HueController() {
-  const connection = useCogsConnection<CogsConnectionParams>();
+  const connection = useTypedCogsConnection();
 
-  const apiKey = useCogsConfig(connection)["API Key"];
   const bridgeIpAddress = useCogsConfig(connection)["Bridge IP Address"];
+  const apiUsername = useCogsDataStoreItem(connection, USERNAME_KEY_PREFIX + bridgeIpAddress) as string;
   const defaultScene = useCogsConfig(connection)["Default Scene"];
 
   const [scenes, setScenes] = useState<HueScenes>();
@@ -36,12 +38,12 @@ export default function HueController() {
       console.warn("Bridge IP address not set");
       return;
     }
-    if (!apiKey) {
+    if (!apiUsername) {
       console.warn("API Key not set");
       return;
     }
     try {
-      const response = await fetch(getScenesUrl(bridgeIpAddress, apiKey), {
+      const response = await fetch(getScenesUrl(bridgeIpAddress, apiUsername), {
         method: "GET",
       });
 
@@ -56,7 +58,7 @@ export default function HueController() {
       console.error("Error fetching Hue scenes", e);
       return undefined;
     }
-  }, [apiKey, bridgeIpAddress]);
+  }, [apiUsername, bridgeIpAddress]);
 
   const showScene = useCallback(
     async (sceneName: string) => {
@@ -78,7 +80,7 @@ export default function HueController() {
 
         // If we now have an ID - recall the scene
         if (sceneId) {
-          await fetch(recallSceneUrl(bridgeIpAddress, apiKey), {
+          await fetch(recallSceneUrl(bridgeIpAddress, apiUsername), {
             method: "PUT",
             body: JSON.stringify({ scene: sceneId }),
           });
@@ -87,7 +89,7 @@ export default function HueController() {
         console.error("Failed to set scene", sceneName);
       }
     },
-    [getScenesFromBridge, apiKey, bridgeIpAddress, scenes]
+    [getScenesFromBridge, apiUsername, bridgeIpAddress, scenes]
   );
 
   const showDefaultScene = useCallback(
@@ -99,7 +101,7 @@ export default function HueController() {
   useEffect(() => {
     if (
       !scenes &&
-      apiKey !== undefined &&
+      apiUsername !== undefined &&
       bridgeIpAddress !== undefined &&
       defaultScene !== undefined
     ) {
@@ -111,7 +113,7 @@ export default function HueController() {
     }
   }, [
     scenes,
-    apiKey,
+    apiUsername,
     bridgeIpAddress,
     defaultScene,
     getScenesFromBridge,
