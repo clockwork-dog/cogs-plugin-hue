@@ -1,5 +1,8 @@
 {
-    "recommendations": [
-        "dbaeumer.vscode-eslint"
-    ]
+  "recommendations": [
+    "andrejunges.Handlebars",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker"
+  ]
 }
