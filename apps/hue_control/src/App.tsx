@@ -29,8 +29,8 @@ export function App() {
     if (apiUsername) {
       return (
         <div className="App">
-          <div>API Username: {apiUsername}</div>
           <div>Bridge IP: {bridgeIpAddress}</div>
+          <div>API Username: {apiUsername}</div>
           <div>Scene: {latestScene}</div>
 
           <HueController />
