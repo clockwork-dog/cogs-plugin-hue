@@ -5,7 +5,7 @@ import { CLIENTKEY_KEY_PREFIX, USERNAME_KEY_PREFIX } from "./constants";
 
 const LINK_BUTTON_NOT_PRESSED = 101;
 const AUTH_BODY = JSON.stringify({
-    deviceType: "cogs#cogs",
+    devicetype: "cogs#cogs",
     generateclientkey: true
 });
 
@@ -45,6 +45,7 @@ export default function HueAuthenticator() {
             } else {
                 const username = result['success']['username'];
                 const clientkey = result['success']['clientkey'];
+                // TODO don't use IPs - maybe bridge IDs
                 const username_key = USERNAME_KEY_PREFIX + bridgeIpAddress;
                 const clientkey_key = CLIENTKEY_KEY_PREFIX + bridgeIpAddress;
 
