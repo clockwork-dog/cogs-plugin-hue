@@ -1,14 +1,11 @@
 import {
   useCogsConfig,
-  useCogsConnection,
   useCogsEvent,
   useWhenShowReset,
 } from "@clockworkdog/cogs-client-react";
 import { useCallback, useEffect, useState } from "react";
-import { HueScenes } from "./types";
-import { useCogsDataStoreItem } from "./hooks/useCogsDataStoreItem";
-import { USERNAME_KEY_PREFIX } from "./constants";
 import { useTypedCogsConnection } from "./hooks/useTypedCogsConnection";
+import { HueApiKeys, HueScenes } from "./types";
 
 const getScenesUrl = (ipAddress: string, apiUsername: string) =>
   `http://${ipAddress}/api/${apiUsername}/scenes`;
@@ -19,19 +16,24 @@ const recallSceneUrl = (ipAddress: string, apiUsername: string) =>
 function findSceneByName(scenes: HueScenes, sceneName: string) {
   if (scenes) {
     return Object.entries(scenes).find(
-      ([id, scene]) => scene.name === sceneName
+      ([id, scene]) => scene.name === sceneName,
     )?.[0];
   }
 }
 
-export default function HueController() {
+export default function HueController({
+  bridgeIpAddress,
+  apiKeys,
+}: {
+  bridgeIpAddress: string;
+  apiKeys: HueApiKeys;
+}) {
   const connection = useTypedCogsConnection();
-
-  const bridgeIpAddress = useCogsConfig(connection)["Bridge IP Address"];
-  const apiUsername = useCogsDataStoreItem(connection, USERNAME_KEY_PREFIX + bridgeIpAddress) as string;
   const defaultScene = useCogsConfig(connection)["Default Scene"];
 
   const [scenes, setScenes] = useState<HueScenes>();
+
+  const apiUsername = apiKeys.applicationkey;
 
   const getScenesFromBridge = useCallback(async () => {
     if (!bridgeIpAddress) {
@@ -89,12 +91,12 @@ export default function HueController() {
         console.error("Failed to set scene", sceneName);
       }
     },
-    [getScenesFromBridge, apiUsername, bridgeIpAddress, scenes]
+    [getScenesFromBridge, apiUsername, bridgeIpAddress, scenes],
   );
 
   const showDefaultScene = useCallback(
     () => showScene(defaultScene),
-    [showScene, defaultScene]
+    [showScene, defaultScene],
   );
 
   // Find scenes on first load
