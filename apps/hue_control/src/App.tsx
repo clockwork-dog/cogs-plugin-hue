@@ -1,8 +1,4 @@
-import {
-  useCogsConfig,
-  useCogsEvent,
-  useIsConnected,
-} from "@clockworkdog/cogs-client-react";
+import { useCogsConfig, useIsConnected } from "@clockworkdog/cogs-client-react";
 import { useEffect, useState } from "react";
 
 import { CogsConnection } from "@clockworkdog/cogs-client";
@@ -41,9 +37,9 @@ export function App() {
     }
   }, [bridgeIpAddress]);
 
-  const [latestScene, setLatestScene] = useState("");
+  // const [latestScene, setLatestScene] = useState("");
 
-  useCogsEvent(cogsConnection, "Show Scene", setLatestScene);
+  // useCogsEvent(cogsConnection, "Show Scene", setLatestScene);
 
   if (isCogsConnected) {
     if (hueBridgeConnection.type === "authenticated") {
@@ -53,12 +49,7 @@ export function App() {
           <div>
             API Application Key: {hueBridgeConnection.apiKeys.applicationkey}
           </div>
-          <div>Scene: {latestScene}</div>
-
-          <HueController
-            apiKeys={hueBridgeConnection.apiKeys}
-            bridgeIpAddress={bridgeIpAddress}
-          />
+          <HueController connection={hueBridgeConnection} />
         </div>
       );
     } else if (hueBridgeConnection.type === "connected") {
@@ -70,7 +61,9 @@ export function App() {
             authenticatedCallback={(keys) => {
               console.log("Keys obtained");
               console.log(keys);
-              // TODO Save keys in store
+              cogsConnection.store.setItems({
+                apiKeys: { [hueBridgeConnection.bridgeInfo.bridgeid]: keys },
+              });
               setHueBridgeConnection({
                 type: "authenticated",
                 ipAddress: hueBridgeConnection.ipAddress,

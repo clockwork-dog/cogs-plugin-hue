@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getConfigUnathenticated } from "./hueApi/hueApiV1";
+import { getConfigUnathenticated } from "./hueApi/hueV1";
 import { HueBridgeInfo, PotentialHueBridgeConnection } from "./types";
 
 async function pollConfigRequest({
@@ -28,10 +28,12 @@ export default function HueConnectionChecker({
 }) {
   useEffect(() => {
     setTimeout(async () => {
-      await pollConfigRequest({
-        connection,
-        bridgeInfoCallback,
-      });
+      if (connection.type === "potential") {
+        await pollConfigRequest({
+          connection,
+          bridgeInfoCallback,
+        });
+      }
     }, 0);
     // TODO This can cause tens of requests hanging around until they time out
     const interval = setInterval(async () => {
