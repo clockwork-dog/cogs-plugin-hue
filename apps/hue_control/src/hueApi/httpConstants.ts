@@ -1,4 +1,6 @@
-export const GET = "GET";
-export const POST = "POST";
-export const PUT = "PUT";
-export const DELETE = "DELETE";
+export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+export const GET: HTTPMethod = "GET";
+export const POST: HTTPMethod = "POST";
+export const PUT: HTTPMethod = "PUT";
+export const DELETE: HTTPMethod = "DELETE";

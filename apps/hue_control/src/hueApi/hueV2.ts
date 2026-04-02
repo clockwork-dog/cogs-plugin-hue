@@ -1,8 +1,13 @@
 import {
   AuthenticatedHueBridgeConnection,
-  HueApiResponse,
   HueBridgeConnection,
 } from "../types";
+import { GET, HTTPMethod, PUT } from "./httpConstants";
+import { SCENE_ENDPOINT } from "./hueV2.endpoints";
+import { HueResponse, HueScene, HueScenePut } from "./hueV2.types";
+import { getFirst } from "./hueV2.utils";
+
+const APPLICATION_KEY_HEADER_NAME = "hue-application-key";
 
 function apiBaseUrl(connection: HueBridgeConnection): string {
   return `https://${connection.ipAddress}/clip/v2`;
@@ -11,12 +16,14 @@ function apiBaseUrl(connection: HueBridgeConnection): string {
 async function apiFetch<BodyType, ResponseType>(
   connection: AuthenticatedHueBridgeConnection,
   path: string,
-  method: string,
+  method: HTTPMethod,
   body?: BodyType,
-): Promise<HueApiResponse<ResponseType>> {
+): Promise<HueResponse<ResponseType>> {
   try {
     const response = await fetch(apiBaseUrl(connection) + path, {
-      headers: { ["hue-application-key"]: connection.apiKeys.applicationkey },
+      headers: {
+        [APPLICATION_KEY_HEADER_NAME]: connection.apiKeys.applicationkey,
+      },
       body: JSON.stringify(body),
       method,
     });
@@ -45,4 +52,27 @@ async function apiFetch<BodyType, ResponseType>(
       error_cause: "network_error",
     };
   }
+}
+
+export async function getScenes(
+  connection: AuthenticatedHueBridgeConnection,
+): Promise<HueResponse<HueScene[]>> {
+  return await apiFetch(connection, SCENE_ENDPOINT, GET);
+}
+
+export async function getScene(
+  connection: AuthenticatedHueBridgeConnection,
+  id: string,
+): Promise<HueResponse<HueScene>> {
+  return getFirst(await apiFetch(connection, SCENE_ENDPOINT + `/${id}`, GET));
+}
+
+export async function putScene(
+  connection: AuthenticatedHueBridgeConnection,
+  id: string,
+  scene: HueScenePut,
+): Promise<HueResponse<HueScene>> {
+  return getFirst(
+    await apiFetch(connection, SCENE_ENDPOINT + `/${id}`, PUT, scene),
+  );
 }

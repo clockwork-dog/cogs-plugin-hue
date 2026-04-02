@@ -1,12 +1,12 @@
+import { HueBridgeConnection } from "../types";
+import { GET, HTTPMethod, POST } from "./httpConstants";
 import {
-  HueApiV1AuthBody,
-  HueApiV1AuthKeys,
-  HueApiV1AuthResponse,
-  HueApiV1BridgeConfigUnauthenticated,
-  HueApiV1Response,
-  HueBridgeConnection,
-} from "../types";
-import { GET, POST } from "./httpConstants";
+  HueV1AuthBody,
+  HueV1AuthKeys,
+  HueV1AuthResponse,
+  HueV1BridgeConfigUnauthenticated,
+  HueV1Response,
+} from "./hueV1.types";
 
 const AUTH_ENDPOINT = "";
 const CONFIG_ENDPOINT = "/config";
@@ -20,9 +20,9 @@ function apiV1BaseUrl(connection: HueBridgeConnection): string {
 async function apiV1FetchUnauthenticated<BodyType, ResponseType>(
   connection: HueBridgeConnection,
   path: string,
-  method: string,
+  method: HTTPMethod,
   body?: BodyType,
-): Promise<HueApiV1Response<ResponseType>> {
+): Promise<HueV1Response<ResponseType>> {
   try {
     const response = await fetch(apiV1BaseUrl(connection) + path, {
       body: JSON.stringify(body),
@@ -54,17 +54,17 @@ async function apiV1FetchUnauthenticated<BodyType, ResponseType>(
 
 export async function getConfigUnathenticated(
   connection: HueBridgeConnection,
-): Promise<HueApiV1Response<HueApiV1BridgeConfigUnauthenticated>> {
+): Promise<HueV1Response<HueV1BridgeConfigUnauthenticated>> {
   return apiV1FetchUnauthenticated(connection, CONFIG_ENDPOINT, GET);
 }
 
 export async function postAuthRequest(
   connection: HueBridgeConnection,
-  body: HueApiV1AuthBody,
-): Promise<HueApiV1Response<HueApiV1AuthKeys>> {
+  body: HueV1AuthBody,
+): Promise<HueV1Response<HueV1AuthKeys>> {
   const response = await apiV1FetchUnauthenticated<
-    HueApiV1AuthBody,
-    HueApiV1AuthResponse
+    HueV1AuthBody,
+    HueV1AuthResponse
   >(connection, AUTH_ENDPOINT, POST, body);
   if (response.result === "success") {
     return { result: "success", response: response.response[0].success };

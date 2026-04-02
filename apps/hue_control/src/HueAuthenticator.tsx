@@ -1,13 +1,9 @@
 import { useEffect } from "react";
-import { LINK_BUTTON_NOT_PRESSED, postAuthRequest } from "./hueApi/hueApiV1";
-import {
-  HueApiKeys,
-  HueApiV1AuthBody,
-  HueApiV1ResponseError,
-  UnauthenticatedHueBridgeConnection,
-} from "./types";
+import { LINK_BUTTON_NOT_PRESSED, postAuthRequest } from "./hueApi/hueV1";
+import { HueV1AuthBody, HueV1ResponseError } from "./hueApi/hueV1.types";
+import { HueApiKeys, UnauthenticatedHueBridgeConnection } from "./types";
 
-const AUTH_BODY: HueApiV1AuthBody = {
+const AUTH_BODY: HueV1AuthBody = {
   devicetype: "cogs#cogs",
   generateclientkey: true,
 };
@@ -19,7 +15,7 @@ async function pollAuthenticationRequest({
 }: {
   connection: UnauthenticatedHueBridgeConnection;
   authenticatedCallback: (hueApiKeys: HueApiKeys) => void;
-  errorCallback: (error: HueApiV1ResponseError) => void;
+  errorCallback: (error: HueV1ResponseError) => void;
 }) {
   console.log("Sending auth request");
   const response = await postAuthRequest(connection, AUTH_BODY);
@@ -46,16 +42,18 @@ export default function HueAuthenticator({
 }: {
   connection: UnauthenticatedHueBridgeConnection;
   authenticatedCallback: (hueApiKeys: HueApiKeys) => void;
-  errorCallback: (error: HueApiV1ResponseError) => void;
+  errorCallback: (error: HueV1ResponseError) => void;
 }) {
   useEffect(() => {
     // TODO This can cause tens of requests hanging around until they time out
     const interval = setInterval(async () => {
-      await pollAuthenticationRequest({
-        connection,
-        authenticatedCallback,
-        errorCallback,
-      });
+      if (connection.type === "connected") {
+        await pollAuthenticationRequest({
+          connection,
+          authenticatedCallback,
+          errorCallback,
+        });
+      }
     }, 4000);
     return () => {
       clearInterval(interval);
