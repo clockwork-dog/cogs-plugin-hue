@@ -3,8 +3,26 @@ import {
   HueBridgeConnection,
 } from "../types";
 import { GET, HTTPMethod, PUT } from "./httpConstants";
-import { SCENE_ENDPOINT } from "./hueV2.endpoints";
-import { HueResponse, HueScene, HueScenePut } from "./hueV2.types";
+import {
+  BRIDGE_HOME_ENDPOINT,
+  GROUPED_LIGHT_ENDPOINT,
+  LIGHT_ENDPOINT,
+  SCENE_ENDPOINT,
+  ZONE_ENDPOINT,
+} from "./hueV2.endpoints";
+import {
+  HueV2BridgeHomeGet,
+  HueV2GroupedLightPut,
+  HueV2GroupedLightReference,
+  HueV2LightGet,
+  HueV2LightPut,
+  HueV2LightReference,
+  HueV2Response,
+  HueV2SceneGet,
+  HueV2ScenePut,
+  HueV2SceneReference,
+  HueV2ZoneGet,
+} from "./hueV2.types";
 import { getFirst } from "./hueV2.utils";
 
 const APPLICATION_KEY_HEADER_NAME = "hue-application-key";
@@ -18,7 +36,7 @@ async function apiFetch<BodyType, ResponseType>(
   path: string,
   method: HTTPMethod,
   body?: BodyType,
-): Promise<HueResponse<ResponseType>> {
+): Promise<HueV2Response<ResponseType>> {
   try {
     const response = await fetch(apiBaseUrl(connection) + path, {
       headers: {
@@ -38,7 +56,8 @@ async function apiFetch<BodyType, ResponseType>(
     } else {
       if (response_json.errors && response_json.errors.length !== 0) {
         console.warn("Unexpected: Error array was nonempty on OK response");
-        console.log(response_json);
+        console.warn(`Status: ${response.status}`);
+        console.warn(response_json);
       }
       return {
         result: "success",
@@ -56,23 +75,59 @@ async function apiFetch<BodyType, ResponseType>(
 
 export async function getScenes(
   connection: AuthenticatedHueBridgeConnection,
-): Promise<HueResponse<HueScene[]>> {
+): Promise<HueV2Response<HueV2SceneGet[]>> {
   return await apiFetch(connection, SCENE_ENDPOINT, GET);
-}
-
-export async function getScene(
-  connection: AuthenticatedHueBridgeConnection,
-  id: string,
-): Promise<HueResponse<HueScene>> {
-  return getFirst(await apiFetch(connection, SCENE_ENDPOINT + `/${id}`, GET));
 }
 
 export async function putScene(
   connection: AuthenticatedHueBridgeConnection,
   id: string,
-  scene: HueScenePut,
-): Promise<HueResponse<HueScene>> {
+  scene: HueV2ScenePut,
+): Promise<HueV2Response<HueV2SceneReference>> {
   return getFirst(
-    await apiFetch(connection, SCENE_ENDPOINT + `/${id}`, PUT, scene),
+    await apiFetch(connection, `${SCENE_ENDPOINT}/${id}`, PUT, scene),
+  );
+}
+
+export async function getLights(
+  connection: AuthenticatedHueBridgeConnection,
+): Promise<HueV2Response<HueV2LightGet[]>> {
+  return await apiFetch(connection, LIGHT_ENDPOINT, GET);
+}
+
+export async function putLight(
+  connection: AuthenticatedHueBridgeConnection,
+  id: string,
+  light: HueV2LightPut,
+): Promise<HueV2Response<HueV2LightReference>> {
+  return getFirst(
+    await apiFetch(connection, `${LIGHT_ENDPOINT}/${id}`, PUT, light),
+  );
+}
+
+export async function getZones(
+  connection: AuthenticatedHueBridgeConnection,
+): Promise<HueV2Response<HueV2ZoneGet[]>> {
+  return await apiFetch(connection, ZONE_ENDPOINT, GET);
+}
+
+export async function getBridgeHomes(
+  connection: AuthenticatedHueBridgeConnection,
+): Promise<HueV2Response<HueV2BridgeHomeGet[]>> {
+  return await apiFetch(connection, BRIDGE_HOME_ENDPOINT, GET);
+}
+
+export async function putGroupedLight(
+  connection: AuthenticatedHueBridgeConnection,
+  id: string,
+  grouped_light: HueV2GroupedLightPut,
+): Promise<HueV2Response<HueV2GroupedLightReference>> {
+  return getFirst(
+    await apiFetch(
+      connection,
+      `${GROUPED_LIGHT_ENDPOINT}/${id}`,
+      PUT,
+      grouped_light,
+    ),
   );
 }

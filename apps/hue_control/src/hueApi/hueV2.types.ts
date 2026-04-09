@@ -1,34 +1,34 @@
 // https://developers.meethue.com/develop/hue-api-v2/api-reference
-export type HueResponse<ResponseType> =
-  | HueResponseSuccess<ResponseType>
-  | HueResponseError;
+export type HueV2Response<ResponseType> =
+  | HueV2ResponseSuccess<ResponseType>
+  | HueV2ResponseError;
 
-export type HueResponseSuccess<ResponseType> = {
+export type HueV2ResponseSuccess<ResponseType> = {
   result: "success";
   response: ResponseType;
 };
 
-export type HueResponseError =
-  | HueResponseErrorStatusCode
-  | HueResponseErrorNetwork;
+export type HueV2ResponseError =
+  | HueV2ResponseErrorStatusCode
+  | HueV2ResponseErrorNetwork;
 
-export type HueResponseErrorStatusCode = {
+export type HueV2ResponseErrorStatusCode = {
   result: "error";
   error_cause: "status_code";
   status: number;
-  errors: HueErrorType[];
+  errors: HueV2ErrorType[];
 };
 
-export type HueResponseErrorNetwork = {
+export type HueV2ResponseErrorNetwork = {
   result: "error";
   error_cause: "network_error";
 };
 
-export type HueErrorType = {
+export type HueV2ErrorType = {
   description: string;
 };
 
-export type HueResourceType =
+export type HueV2ResourceType =
   | "device"
   | "bridge_home"
   | "room"
@@ -74,10 +74,10 @@ export type HueResourceType =
   | "motion_area_configuration"
   | "clip";
 
-export type HueDeviceParentType = HueResourceType &
+export type HueV2DeviceParentType = HueV2ResourceType &
   ("room" | "zone" | "bridge_home");
 
-export type HueDeviceServiceType = HueResourceType &
+export type HueV2DeviceServiceType = HueV2ResourceType &
   (
     | "light"
     | "button"
@@ -102,50 +102,53 @@ export type HueDeviceServiceType = HueResourceType &
     | "zigbee_device_discovery"
   );
 
-export type HueGroupedServiceType = HueResourceType &
+export type HueV2GroupedServiceType = HueV2ResourceType &
   ("grouped_light" | "grouped_motion" | "grouped_light_level");
 
-export type HueGenericResource = {
+export type HueV2GenericResource = {
   id: string;
   id_v1?: string;
-  type: HueResourceType;
+  type: HueV2ResourceType;
 };
 
-export type HueGenericDeviceParent = HueGenericResource & {
-  type: HueDeviceParentType;
-  children: (HueDeviceReference | HueRoomReference)[];
-  services: HueGenericGroupedServiceReference[];
+export type HueV2GenericDeviceParent = HueV2GenericResource & {
+  type: HueV2DeviceParentType;
+  children: (HueV2DeviceReference | HueV2RoomReference)[];
+  services: HueV2GenericGroupedServiceReference[];
 };
 
-export type HueGenericDeviceService = HueGenericResource & {
+export type HueV2GenericDeviceService = HueV2GenericResource & {
   id: string;
   id_v1?: string;
-  type: HueDeviceServiceType;
-  owner: HueDeviceReference;
+  type: HueV2DeviceServiceType;
+  owner: HueV2DeviceReference;
 };
 
-export type HueGenericResourceReference = {
+export type HueV2GenericResourceReference = {
   rid: string;
-  rtype: HueResourceType;
+  rtype: HueV2ResourceType;
 };
 
-export type HueGenericDeviceServiceReference = HueGenericResourceReference & {
-  rtype: HueDeviceServiceType;
-};
+export type HueV2GenericDeviceServiceReference =
+  HueV2GenericResourceReference & {
+    rtype: HueV2DeviceServiceType;
+  };
 
-export type HueGenericGroupedServiceReference = HueGenericResourceReference & {
-  rtype: HueGroupedServiceType;
-};
+export type HueV2GenericGroupedServiceReference =
+  HueV2GenericResourceReference & {
+    rtype: HueV2GroupedServiceType;
+  };
 
-export type HueGenericDeviceParentReference = HueGenericResourceReference & {
-  rtype: HueDeviceParentType;
-};
+export type HueV2GenericDeviceParentReference =
+  HueV2GenericResourceReference & {
+    rtype: HueV2DeviceParentType;
+  };
 
-export type HueBridgeHome = HueGenericDeviceParent & {
+export type HueV2BridgeHomeGet = HueV2GenericDeviceParent & {
   type: "bridge_home";
 };
 
-export type HueDeviceParentArchetype =
+export type HueV2DeviceParentArchetype =
   | "living_room"
   | "kitchen"
   | "dining"
@@ -187,24 +190,30 @@ export type HueDeviceParentArchetype =
   | "pool"
   | "other";
 
-export type HueDeviceParentMetadata = {
+export type HueV2DeviceParentMetadataGet = {
   name: string;
-  archetype: HueDeviceParentArchetype;
+  archetype: HueV2DeviceParentArchetype;
 };
 
-export type HueRoom = HueGenericDeviceParent & {
+export type HueV2RoomGet = HueV2GenericDeviceParent & {
   type: "room";
-  children: HueDeviceReference[];
-  metadata: HueDeviceParentMetadata;
+  children: HueV2DeviceReference[];
+  metadata: HueV2DeviceParentMetadataGet;
 };
 
-export type HueZone = HueGenericDeviceParent & {
+export type HueV2ZoneGet = HueV2GenericDeviceParent & {
   type: "zone";
-  children: HueDeviceReference[];
-  metadata: HueDeviceParentMetadata;
+  children: HueV2DeviceReference[];
+  metadata: HueV2DeviceParentMetadataGet;
 };
 
-export type HueLightArchetype =
+export type HueV2GroupedLightPut = {
+  //unfinished
+  on?: { on?: boolean };
+  dynamics?: { duration?: number };
+};
+
+export type HueV2LightArchetype =
   | "unknown_archetype"
   | "classic_bulb"
   | "sultan_bulb"
@@ -230,14 +239,14 @@ export type HueLightArchetype =
   | "ground_spot"
   | "wall_spot"
   | "plug"
-  | "hue_go"
-  | "hue_lightstrip"
-  | "hue_iris"
-  | "hue_bloom"
+  | "HueV2_go"
+  | "HueV2_lightstrip"
+  | "HueV2_iris"
+  | "HueV2_bloom"
   | "bollard"
   | "wall_washer"
-  | "hue_play"
-  | "hue_chime"
+  | "HueV2_play"
+  | "HueV2_chime"
   | "vintage_bulb"
   | "vintage_candle_bulb"
   | "ellipse_bulb"
@@ -247,140 +256,156 @@ export type HueLightArchetype =
   | "edison_bulb"
   | "christmas_tree"
   | "string_light"
-  | "hue_centris"
-  | "hue_lightstrip_tv"
-  | "hue_lightstrip_pc"
-  | "hue_tube"
-  | "hue_signe"
+  | "HueV2_centris"
+  | "HueV2_lightstrip_tv"
+  | "HueV2_lightstrip_pc"
+  | "HueV2_tube"
+  | "HueV2_signe"
   | "pendant_spot"
   | "ceiling_horizontal"
   | "ceiling_tube"
   | "up_and_down"
   | "up_and_down_up"
   | "up_and_down_down"
-  | "hue_floodlight_camera"
+  | "HueV2_floodlight_camera"
   | "twilight"
   | "twilight_front"
   | "twilight_back"
-  | "hue_play_wallwasher"
-  | "hue_omniglow"
-  | "hue_neon"
+  | "HueV2_play_wallwasher"
+  | "HueV2_omniglow"
+  | "HueV2_neon"
   | "string_globe"
   | "string_permanent";
 
-export type HueDeviceArchetype = HueLightArchetype | "bridge_v2" | "bridge_v3";
+export type HueV2DeviceArchetype =
+  | HueV2LightArchetype
+  | "bridge_v2"
+  | "bridge_v3";
 
-export type HueDeviceProductData = {
+export type HueV2DeviceProductDataGet = {
   model_id: string;
   manufacturer_name: string;
   product_name: string;
-  product_archetype: HueDeviceArchetype;
+  product_archetype: HueV2DeviceArchetype;
   certified: boolean;
   software_version: string;
   hardware_platform_type?: string;
 };
 
-export type HueDeviceMetadata = {
+export type HueV2DeviceMetadataGet = {
   name: string;
-  archetype: HueDeviceArchetype;
+  archetype: HueV2DeviceArchetype;
 };
 
-export type HueDeviceUsertest = {
+export type HueV2DeviceUsertestGet = {
   status: "set" | "changing";
   usertest: boolean;
 };
 
-export type HueDeviceMode = any;
+export type HueV2DeviceModeGet = any;
 
-export type HueDevice = HueGenericResource & {
+export type HueV2DeviceGet = HueV2GenericResource & {
   type: "device";
-  services: HueDeviceServiceType[];
-  product_data: HueDeviceProductData;
-  metadata: HueDeviceMetadata;
-  usertest?: HueDeviceUsertest;
-  device_mode?: HueDeviceMode;
+  services: HueV2DeviceServiceType[];
+  product_data: HueV2DeviceProductDataGet;
+  metadata: HueV2DeviceMetadataGet;
+  usertest?: HueV2DeviceUsertestGet;
+  device_mode?: HueV2DeviceModeGet;
 };
 
-export type HueLightMetadata = {
+export type HueV2LightMetadataGet = {
   name: string;
-  archetype: HueLightArchetype;
+  archetype: HueV2LightArchetype;
   fixed_mired?: number;
-  function: HueLightFunction;
+  function: HueV2LightFunction;
 };
 
-export type HueLightProductData = {
+export type HueV2LightMetadataPut = {
   name?: string;
-  archetype?: HueLightArchetype;
-  function: HueLightFunction;
+  archetype?: HueV2LightArchetype;
+  function?: HueV2LightFunction;
 };
 
-export type HueLightOn = { on: boolean };
+export type HueV2LightProductDataGet = {
+  name?: string;
+  archetype?: HueV2LightArchetype;
+  function: HueV2LightFunction;
+};
 
-export type HueLightFunction =
+export type HueV2LightOnGet = { on: boolean };
+export type HueV2LightOnPut = { on: boolean };
+
+export type HueV2LightFunction =
   | "functional"
   | "decorative"
   | "mixed"
   | "unknown";
 
-export type HueLightDimming = {
+export type HueV2LightDimmingPut = {
   brightness: number;
 };
 
-export type HueLightDimmingExtended = HueLightDimming & {
+export type HueV2LightDimmingGet = {
+  brightness: number;
   min_dim_level?: number;
 };
 
-export type HueLightMirekSchema = {
+export type HueV2LightMirekSchema = {
   mirek_minimum: number;
   mirek_maximum: number;
 };
 
-export type HueLightColorTemp = {
+export type HueV2LightColorTempPut = {
   mirek: number | null;
 };
 
-export type HueLightColorTempExtended = HueLightColorTemp & {
+export type HueV2LightColorTempGet = {
+  mirek: number | null;
   mirek_valid: boolean;
-  mirek_schema: HueLightMirekSchema;
+  mirek_schema: HueV2LightMirekSchema;
 };
 
 // https://en.wikipedia.org/wiki/CIE_1931_color_space
-export type HueCieXyPos = {
+export type HueV2CieXyPos = {
   x: number;
   y: number;
 };
 
-export type HueGamut = {
-  red: HueCieXyPos;
-  green: HueCieXyPos;
-  blue: HueCieXyPos;
+export type HueV2Gamut = {
+  red: HueV2CieXyPos;
+  green: HueV2CieXyPos;
+  blue: HueV2CieXyPos;
 };
 
-export type HueGamutType = "A" | "B" | "C" | "other";
+export type HueV2GamutType = "A" | "B" | "C" | "other";
 
-export type HueLightColor = {
-  xy: HueCieXyPos;
+export type HueV2LightColorPut = {
+  xy: HueV2CieXyPos;
 };
 
-export type HueLightColorExtended = HueLightColor & {
-  gamut?: HueGamut;
-  gamut_type: HueGamutType;
+export type HueV2LightColorGet = {
+  xy: HueV2CieXyPos;
+  gamut?: HueV2Gamut;
+  gamut_type: HueV2GamutType;
 };
 
-export type HueLightDynamics = any;
-export type HueLightAlert = any;
-export type HueLightSignaling = any;
-export type HueLightGradient = any;
-export type HueLightGradientExtended = any;
-export type HueLightTimedEffects = any;
-export type HueLightContentConfig = any;
-export type HueLightGeometry = any;
+export type HueV2LightDynamicsGet = any;
+export type HueV2LightAlertGet = any;
+export type HueV2LightSignalingGet = any;
+export type HueV2LightGradientGet = any;
+export type HueV2LightContentConfigGet = any;
+export type HueV2LightGeometryGet = any;
 
-export type HueLightMode = "normal" | "streaming";
+export type HueV2LightTimedEffectType = "sunrise" | "sunset" | "no_effect";
 
-export type HueLightDynamicsDuration = { duration?: number };
+export type HueV2LightTimedEffectsPut = {
+  effect: HueV2LightTimedEffectType;
+};
+export type HueV2LightTimedEffectsGet = any;
 
-export type HueLightEffectType =
+export type HueV2LightModeGet = "normal" | "streaming";
+
+export type HueV2LightEffectType =
   | "prism"
   | "opal"
   | "glisten"
@@ -393,341 +418,362 @@ export type HueLightEffectType =
   | "enchant"
   | "no_effect";
 
-export type HueLightEffects = {
-  effect: HueLightEffectType;
+export type HueV2LightEffectsDeprecatedPut = {
+  effect: HueV2LightEffectType;
 };
 
-export type HueLightEffectsExtended = HueLightEffects & {
-  status_values: HueLightEffectType[];
-  effect_values: HueLightEffectType[];
+export type HueV2LightEffectsDeprecatedGet = {
+  effect: HueV2LightEffectType;
+  status_values: HueV2LightEffectType[];
+  effect_values: HueV2LightEffectType[];
 };
 
-export type HueLightEffectsV2ActionParams = {
-  color?: HueLightColor;
-  color_temperature?: HueLightColorTemp;
+export type HueV2LightEffectsV2ActionParamsGet = {
+  color?: HueV2LightColorPut;
+  color_temperature?: HueV2LightColorTempPut;
+  speed: number;
+};
+
+export type HueV2LightEffectsV2ActionParamsPut = {
+  color?: HueV2LightColorPut;
+  color_temperature?: HueV2LightColorTempPut;
   speed?: number;
 };
 
-export type HueLightEffectsV2Action = {
-  effect: HueLightEffectType;
-  parameters?: HueLightEffectsV2ActionParams;
+export type HueV2LightEffectsV2ActionPut = {
+  effect: HueV2LightEffectType;
+  parameters?: HueV2LightEffectsV2ActionParamsPut;
 };
 
-export type HueLightEffectsV2Status = {
-  effect: HueLightEffectType;
-  effect_values: HueLightEffectType[];
-  parameters?: HueLightEffectsV2ActionParams & { speed: number };
+export type HueV2LightEffectsV2ActionGet = {
+  effect_values: HueV2LightEffectType[];
 };
 
-export type HueLightEffectsV2 = {
-  action: HueLightEffectsV2Action;
+export type HueV2LightEffectsV2StatusGet = {
+  effect: HueV2LightEffectType;
+  effect_values: HueV2LightEffectType[];
+  parameters?: HueV2LightEffectsV2ActionParamsGet;
 };
 
-export type HueLightEffectsV2Extended = {
-  action: {
-    effect_values: HueLightEffectType[];
-  };
-  status: HueLightEffectsV2Status;
+export type HueV2LightEffectsV2Put = {
+  action: HueV2LightEffectsV2ActionPut;
 };
 
-export type HueLightPowerupPreset =
+export type HueV2LightEffectsV2Get = {
+  action: HueV2LightEffectsV2ActionGet;
+  status: HueV2LightEffectsV2StatusGet;
+};
+
+export type HueV2LightPowerupPreset =
   | "safety"
   | "powerfail"
   | "last_on_state"
   | "custom";
 
-export type HueLightPowerup = {
-  preset: HueLightPowerupPreset;
+export type HueV2LightPowerupGet = {
+  preset: HueV2LightPowerupPreset;
   configured: boolean;
   on: {
     mode: "on" | "toggle" | "previous";
-    on?: boolean;
+    on?: HueV2LightOnPut;
   };
   dimming?: {
     mode: "dimming" | "previous";
-    dimming?: HueLightDimming;
+    dimming?: HueV2LightDimmingPut;
   };
   color?: {
     mode: "color_temperature" | "color" | "previous";
-    color_temperature?: HueLightColorTemp;
-    color?: HueLightColor;
+    color_temperature?: HueV2LightColorTempPut;
+    color?: HueV2LightColorPut;
   };
 };
 
-export type HueLight = HueGenericDeviceService & {
+export type HueV2LightPowerupPut = {
+  preset: HueV2LightPowerupPreset;
+  on?: {
+    mode: "on" | "toggle" | "previous";
+    on?: HueV2LightOnPut;
+  };
+  dimming?: {
+    mode: "dimming" | "previous";
+    dimming?: HueV2LightDimmingPut;
+  };
+  color?: {
+    mode: "color_temperature" | "color" | "previous";
+    color_temperature?: HueV2LightColorTempPut;
+    color?: HueV2LightColorPut;
+  };
+};
+
+export type HueV2LightGet = HueV2GenericDeviceService & {
   type: "light";
-  metadata: HueLightMetadata;
-  product_data: HueLightProductData;
+  metadata: HueV2LightMetadataGet;
+  product_data: HueV2LightProductDataGet;
   service_id: number;
-  on: HueLightOn;
-  dimming?: HueLightDimmingExtended;
-  color_temperature?: HueLightColorTempExtended;
-  color?: HueLightColorExtended;
-  dynamics?: HueLightDynamics;
-  alert?: HueLightAlert;
-  signaling?: HueLightSignaling;
-  mode: HueLightMode;
+  on: HueV2LightOnGet;
+  dimming?: HueV2LightDimmingGet;
+  color_temperature?: HueV2LightColorTempGet;
+  color?: HueV2LightColorGet;
+  dynamics?: HueV2LightDynamicsGet;
+  alert?: HueV2LightAlertGet;
+  signaling?: HueV2LightSignalingGet;
+  mode: HueV2LightModeGet;
   // Gradient used in e.g. LED strips
-  gradient?: HueLightGradientExtended;
+  gradient?: HueV2LightGradientGet;
   // effects is deprecated, use effects_v2
-  effects?: HueLightEffectsExtended;
-  effects_v2?: HueLightEffectsV2Extended;
-  timed_effects?: HueLightTimedEffects;
-  powerup?: HueLightPowerup;
-  content_configuration?: HueLightContentConfig;
-  geometry?: HueLightGeometry;
+  effects?: HueV2LightEffectsDeprecatedGet;
+  effects_v2?: HueV2LightEffectsV2Get;
+  timed_effects?: HueV2LightTimedEffectsGet;
+  powerup?: HueV2LightPowerupGet;
+  content_configuration?: HueV2LightContentConfigGet;
+  geometry?: HueV2LightGeometryGet;
 };
 
-export type HueSceneAction = {
-  on?: HueLightOn;
-  dimming?: HueLightDimming;
-  color?: HueLightColor;
-  color_temperature?: HueLightColorTemp;
-  gradient?: HueLightGradient;
-  effects?: HueLightEffects;
-  effects_v2?: HueLightEffectsV2;
-  dynamics?: HueLightDynamicsDuration;
+export type HueV2DeviceIdentifyPut = {
+  action: "identify";
+  duration?: number;
 };
 
-export type HueSceneTargetedAction = {
-  target: HueLightReference;
-  action: HueSceneAction;
+export type HueV2DeltaAction = "up" | "down" | "stop";
+
+export type HueV2LightDimmingDeltaPut = {
+  action: HueV2DeltaAction;
+  brightness_delta?: number;
 };
 
-export type HueScenePalette = any;
+export type HueV2LightColorTempDeltaPut = {
+  action: HueV2DeltaAction;
+  mirek_delta?: number;
+};
 
-export type HueSceneMetadata = {
+export type HueV2LightDynamicsPut = any;
+export type HueV2LightAlertPut = any;
+export type HueV2LightSignalingPut = any;
+export type HueV2LightGradientPut = any;
+export type HueV2LightContentConfigPut = any;
+export type HueV2LightGeometryPut = any;
+
+export type HueV2LightPut = {
+  metadata?: HueV2LightMetadataPut;
+  identify?: HueV2DeviceIdentifyPut;
+  on?: HueV2LightOnPut;
+  dimming?: HueV2LightDimmingPut;
+  dimming_delta?: HueV2LightDimmingDeltaPut;
+  color_temperature?: HueV2LightColorTempPut;
+  color_temperature_delta?: HueV2LightColorTempDeltaPut;
+  color?: HueV2LightColorPut;
+  dynamics?: HueV2LightDynamicsPut;
+  alert?: HueV2LightAlertPut;
+  signaling?: HueV2LightSignalingPut;
+  gradient?: HueV2LightGradientPut;
+  effects?: HueV2LightEffectsDeprecatedPut;
+  effects_v2?: HueV2LightEffectsV2Put;
+  timed_effects?: HueV2LightTimedEffectsPut;
+  powerup?: HueV2LightPowerupPut;
+  content_configuration?: HueV2LightContentConfigPut;
+  geometry?: HueV2LightGeometryPut;
+};
+
+export type HueV2SceneActionDynamics = {
+  duration: number;
+};
+
+export type HueV2SceneAction = {
+  on?: HueV2LightOnPut;
+  dimming?: HueV2LightDimmingPut;
+  color?: HueV2LightColorPut;
+  color_temperature?: HueV2LightColorTempPut;
+  gradient?: HueV2LightGradientPut;
+  effects?: HueV2LightEffectsDeprecatedPut;
+  effects_v2?: HueV2LightEffectsV2Put;
+  dynamics?: HueV2SceneActionDynamics;
+};
+
+export type HueV2SceneTargetedAction = {
+  target: HueV2LightReference;
+  action: HueV2SceneAction;
+};
+
+export type HueV2ScenePaletteGet = any;
+export type HueV2ScenePalettePut = any;
+
+export type HueV2SceneMetadataPut = {
+  name?: string;
+  appdata?: string;
+};
+
+export type HueV2SceneMetadataGet = {
   name: string;
   appdata: string;
+  image: HueV2PublicImageReference;
 };
 
-export type HueSceneMetadataExtended = HueSceneMetadata & {
-  image: HuePublicImageReference;
-};
-
-export type HueSceneStatus = {
+export type HueV2SceneStatusGet = {
   active: "inactive" | "static" | "dynamic_palette";
   last_recall: string;
 };
 
-export type HueScene = HueGenericResource & {
+export type HueV2SceneGet = HueV2GenericResource & {
   type: "scene";
-  actions: HueSceneTargetedAction[];
-  palette: HueScenePalette;
-  metadata: HueSceneMetadataExtended;
-  group: HueGenericGroupedServiceReference;
+  actions: HueV2SceneTargetedAction[];
+  palette: HueV2ScenePaletteGet;
+  metadata: HueV2SceneMetadataGet;
+  group: HueV2GenericDeviceParentReference;
   speed: number;
   auto_dynamic: boolean;
-  status: HueSceneStatus;
+  status: HueV2SceneStatusGet;
 };
 
-export type HueSceneRecall = {
+export type HueV2SceneRecallPut = {
   action?: "active" | "dynamic_palette" | "static";
   duration?: number;
-  dimming?: HueLightDimming;
+  dimming?: HueV2LightDimmingPut;
 };
 
-export type HueScenePut = {
-  actions?: HueSceneTargetedAction[];
-  palette?: HueScenePalette;
-  metadata?: HueSceneMetadata;
+export type HueV2ScenePut = {
+  actions?: HueV2SceneTargetedAction[];
+  palette?: HueV2ScenePalettePut;
+  metadata?: HueV2SceneMetadataPut;
   speed?: number;
   auto_dynamic?: boolean;
-  recall?: HueSceneRecall;
+  recall?: HueV2SceneRecallPut;
 };
 
-// Unimplemented
-export type HueButton = HueGenericDeviceService & { type: "button" };
-// Unimplemented
-export type HueBellButton = HueGenericDeviceService & { type: "bell_button" };
-// Unimplemented
-export type HueRelativeRotary = HueGenericDeviceService & {
-  type: "relative_rotary";
-};
-// Unimplemented
-export type HueTemperature = HueGenericDeviceService & { type: "temperature" };
-// Unimplemented
-export type HueLightLevel = HueGenericDeviceService & { type: "light_level" };
-// Unimplemented
-export type HueMotion = HueGenericDeviceService & { type: "motion" };
-// Unimplemented
-export type HueCameraMotion = HueGenericDeviceService & {
-  type: "camera_motion";
-};
-// Unimplemented
-export type HueEntertainment = HueGenericDeviceService & {
-  type: "entertainment";
-};
-// Unimplemented
-export type HueContact = HueGenericDeviceService & { type: "contact" };
-// Unimplemented
-export type HueTamper = HueGenericDeviceService & { type: "tamper" };
-// Unimplemented
-export type HueConvenienceAreaMotion = HueGenericDeviceService & {
-  type: "convenience_area_motion";
-};
-// Unimplemented
-export type HueSecurityAreaMotion = HueGenericDeviceService & {
-  type: "security_area_motion";
-};
-// Unimplemented
-export type HueSpeaker = HueGenericDeviceService & { type: "speaker" };
-// Unimplemented
-export type HueDevicePower = HueGenericDeviceService & { type: "device_power" };
-// Unimplemented
-export type HueDeviceSoftwareUpdate = HueGenericDeviceService & {
-  type: "device_software_update";
-};
-// Unimplemented
-export type HueZigbeeConnectivity = HueGenericDeviceService & {
-  type: "zigbee_connectivity";
-};
-// Unimplemented
-export type HueZgpConnectivity = HueGenericDeviceService & {
-  type: "zgp_connectivity";
-};
-// Unimplemented
-export type HueBridge = HueGenericDeviceService & { type: "bridge" };
-// Unimplemented
-export type HueMotionAreaCandidate = HueGenericDeviceService & {
-  type: "motion_area_candidate";
-};
-// Unimplemented
-export type HueZigbeeDeviceDiscovery = HueGenericDeviceService & {
-  type: "zigbee_device_discovery";
-};
-
-export type HueDeviceReference = HueGenericResourceReference & {
+export type HueV2DeviceReference = HueV2GenericResourceReference & {
   rtype: "device";
 };
-export type HueBridgeHomeReference = HueGenericResourceReference & {
+export type HueV2BridgeHomeReference = HueV2GenericResourceReference & {
   rtype: "bridge_home";
 };
-export type HueRoomReference = HueGenericResourceReference & {
+export type HueV2RoomReference = HueV2GenericResourceReference & {
   rtype: "room";
 };
-export type HueZoneReference = HueGenericResourceReference & {
+export type HueV2ZoneReference = HueV2GenericResourceReference & {
   rtype: "zone";
 };
-export type HueServiceGroupReference = HueGenericResourceReference & {
+export type HueV2ServiceGroupReference = HueV2GenericResourceReference & {
   rtype: "service_group";
 };
-export type HueLightReference = HueGenericResourceReference & {
+export type HueV2LightReference = HueV2GenericResourceReference & {
   rtype: "light";
 };
-export type HueButtonReference = HueGenericResourceReference & {
+export type HueV2ButtonReference = HueV2GenericResourceReference & {
   rtype: "button";
 };
-export type HueBellButtonReference = HueGenericResourceReference & {
+export type HueV2BellButtonReference = HueV2GenericResourceReference & {
   rtype: "bell_button";
 };
-export type HueRelativeRotaryReference = HueGenericResourceReference & {
+export type HueV2RelativeRotaryReference = HueV2GenericResourceReference & {
   rtype: "relative_rotary";
 };
-export type HueTemperatureReference = HueGenericResourceReference & {
+export type HueV2TemperatureReference = HueV2GenericResourceReference & {
   rtype: "temperature";
 };
-export type HueLightLevelReference = HueGenericResourceReference & {
+export type HueV2LightLevelReference = HueV2GenericResourceReference & {
   rtype: "light_level";
 };
-export type HueMotionReference = HueGenericResourceReference & {
+export type HueV2MotionReference = HueV2GenericResourceReference & {
   rtype: "motion";
 };
-export type HueCameraMotionReference = HueGenericResourceReference & {
+export type HueV2CameraMotionReference = HueV2GenericResourceReference & {
   rtype: "camera_motion";
 };
-export type HueEntertainmentReference = HueGenericResourceReference & {
+export type HueV2EntertainmentReference = HueV2GenericResourceReference & {
   rtype: "entertainment";
 };
-export type HueContactReference = HueGenericResourceReference & {
+export type HueV2ContactReference = HueV2GenericResourceReference & {
   rtype: "contact";
 };
-export type HueTamperReference = HueGenericResourceReference & {
+export type HueV2TamperReference = HueV2GenericResourceReference & {
   rtype: "tamper";
 };
-export type HueConvenienceAreaMotionReference = HueGenericResourceReference & {
-  rtype: "convenience_area_motion";
-};
-export type HueSecurityAreaMotionReference = HueGenericResourceReference & {
+export type HueV2ConvenienceAreaMotionReference =
+  HueV2GenericResourceReference & {
+    rtype: "convenience_area_motion";
+  };
+export type HueV2SecurityAreaMotionReference = HueV2GenericResourceReference & {
   rtype: "security_area_motion";
 };
-export type HueSpeakerReference = HueGenericResourceReference & {
+export type HueV2SpeakerReference = HueV2GenericResourceReference & {
   rtype: "speaker";
 };
-export type HueGroupedLightReference = HueGenericResourceReference & {
+export type HueV2GroupedLightReference = HueV2GenericResourceReference & {
   rtype: "grouped_light";
 };
-export type HueGroupedMotionReference = HueGenericResourceReference & {
+export type HueV2GroupedMotionReference = HueV2GenericResourceReference & {
   rtype: "grouped_motion";
 };
-export type HueGroupedLightLevelReference = HueGenericResourceReference & {
+export type HueV2GroupedLightLevelReference = HueV2GenericResourceReference & {
   rtype: "grouped_light_level";
 };
-export type HueDevicePowerReference = HueGenericResourceReference & {
+export type HueV2DevicePowerReference = HueV2GenericResourceReference & {
   rtype: "device_power";
 };
-export type HueDeviceSoftwareUpdateReference = HueGenericResourceReference & {
-  rtype: "device_software_update";
-};
-export type HueZigbeeConnectivityReference = HueGenericResourceReference & {
+export type HueV2DeviceSoftwareUpdateReference =
+  HueV2GenericResourceReference & {
+    rtype: "device_software_update";
+  };
+export type HueV2ZigbeeConnectivityReference = HueV2GenericResourceReference & {
   rtype: "zigbee_connectivity";
 };
-export type HueZgpConnectivityReference = HueGenericResourceReference & {
+export type HueV2ZgpConnectivityReference = HueV2GenericResourceReference & {
   rtype: "zgp_connectivity";
 };
-export type HueBridgeReference = HueGenericResourceReference & {
+export type HueV2BridgeReference = HueV2GenericResourceReference & {
   rtype: "bridge";
 };
-export type HueMotionAreaCandidateReference = HueGenericResourceReference & {
-  rtype: "motion_area_candidate";
-};
-export type HueWifiConnectivityReference = HueGenericResourceReference & {
+export type HueV2MotionAreaCandidateReference =
+  HueV2GenericResourceReference & {
+    rtype: "motion_area_candidate";
+  };
+export type HueV2WifiConnectivityReference = HueV2GenericResourceReference & {
   rtype: "wifi_connectivity";
 };
-export type HueZigbeeDeviceDiscoveryReference = HueGenericResourceReference & {
-  rtype: "zigbee_device_discovery";
-};
-export type HueHomekitReference = HueGenericResourceReference & {
+export type HueV2ZigbeeDeviceDiscoveryReference =
+  HueV2GenericResourceReference & {
+    rtype: "zigbee_device_discovery";
+  };
+export type HueV2HomekitReference = HueV2GenericResourceReference & {
   rtype: "homekit";
 };
-export type HueMatterReference = HueGenericResourceReference & {
+export type HueV2MatterReference = HueV2GenericResourceReference & {
   rtype: "matter";
 };
-export type HueMatterFabricReference = HueGenericResourceReference & {
+export type HueV2MatterFabricReference = HueV2GenericResourceReference & {
   rtype: "matter_fabric";
 };
-export type HueSceneReference = HueGenericResourceReference & {
+export type HueV2SceneReference = HueV2GenericResourceReference & {
   rtype: "scene";
 };
-export type HueEntertainmentConfigurationReference =
-  HueGenericResourceReference & {
+export type HueV2EntertainmentConfigurationReference =
+  HueV2GenericResourceReference & {
     rtype: "entertainment_configuration";
   };
-export type HuePublicImageReference = HueGenericResourceReference & {
+export type HueV2PublicImageReference = HueV2GenericResourceReference & {
   rtype: "public_image";
 };
-export type HueAuthV1Reference = HueGenericResourceReference & {
+export type HueV2AuthV1Reference = HueV2GenericResourceReference & {
   rtype: "auth_v1";
 };
-export type HueBehaviorScriptReference = HueGenericResourceReference & {
+export type HueV2BehaviorScriptReference = HueV2GenericResourceReference & {
   rtype: "behavior_script";
 };
-export type HueBehaviorInstanceReference = HueGenericResourceReference & {
+export type HueV2BehaviorInstanceReference = HueV2GenericResourceReference & {
   rtype: "behavior_instance";
 };
-export type HueGeofenceClientReference = HueGenericResourceReference & {
+export type HueV2GeofenceClientReference = HueV2GenericResourceReference & {
   rtype: "geofence_client";
 };
-export type HueGeolocationReference = HueGenericResourceReference & {
+export type HueV2GeolocationReference = HueV2GenericResourceReference & {
   rtype: "geolocation";
 };
-export type HueSmartSceneReference = HueGenericResourceReference & {
+export type HueV2SmartSceneReference = HueV2GenericResourceReference & {
   rtype: "smart_scene";
 };
-export type HueMotionAreaConfigurationReference =
-  HueGenericResourceReference & {
+export type HueV2MotionAreaConfigurationReference =
+  HueV2GenericResourceReference & {
     rtype: "motion_area_configuration";
   };
-export type HueClipReference = HueGenericResourceReference & {
+export type HueV2ClipReference = HueV2GenericResourceReference & {
   rtype: "clip";
 };
