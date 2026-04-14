@@ -44,6 +44,6 @@ You could trigger these from COGS using the "Set Zone To Scene" action, then onc
 
 For the fuel gauge, you could create scenes in the Hue app which have a gradient on the LED Strip to make the gauge show a slowly dropping amount of fuel, with a gradient from green at the top to red at the bottom.
 
-For the cabin lights, you could turn all of them on or off using scenes in the "Cabin lights" zone, or control the front and the back independently using their respective zones. Remember though, if you set a scene on the "Cabin lights" zone, it will overwrite the colour of the bulbs set in the other scenes. You could use the optional [[#Duration]] parameter as described above to make the Cabin lights fade out slowly. Or even make the cabin lights shut off instantly, with a transition time of 0 seconds!
+For the cabin lights, you could turn all of them on or off using scenes in the "Cabin lights" zone, or control the front and the back independently using their respective zones. Remember though, if you set a scene on the "Cabin lights" zone, it will overwrite the colour of the bulbs set in the other scenes. You could use the optional [duration](#Duration) parameter as described above to make the Cabin lights fade out slowly. Or even make the cabin lights shut off instantly, with a transition time of 0 seconds!
 
 For the smoke machine, you could use the "Set Device On/Off" actions to turn it on when things go pear-shaped!
