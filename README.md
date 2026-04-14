@@ -1,87 +1,49 @@
-# COGS SDK Example
+# COGS Phillips Hue Plugin
+This is a plugin to allow [COGS](https://cogs.show/) to interact with lights and smart plugs from the [Phillips Hue](https://www.philips-hue.com/en-gb) brand.
 
-This repository give you a structure to put together your packages which make use of the COGS SDK. These packages might be:
+> [!IMPORTANT]
+> In order to use this plugin, you must have a [Hue Bridge](https://www.philips-hue.com/en-gb/p/hue-bridge/8719514342583) (either regular or pro). You cannot use this plugin with only lightbulbs or smart plugs.
+## Quick-start
+1. If you haven't already, set up your Hue bridge with the Hue app
+2. In the app, go to `Settings > Hue Bridges > {Your Bridge Name}` and note down the `IP address`. This should be four numbers separated by dots e.g. "5.6.7.8".
+3. Download the plugin [here](https://example.org) and unzip the folder into the `plugins` folder in your COGS project
+4. Open the project in COGS and enable the Hue Control in the Plugins menu
+5. Go to the new Hue Control section in the left panel and input the IP address you found earlier
+6. Follow the instructions in the plugin window to pair COGS with your bridge
+7. You are all set up! Experiment with the new "Hue Control" actions or keep reading to learn more.
+# Interacting with Hue
+When you set up your Hue lights, you will likely be told by Hue to put them in rooms. COGS does not care how you set this up, so just make sure it makes sense to you! COGS only cares about *zones*. Zones are a more flexible version of rooms, so we chose to make this plugin interact only with zones. 
 
-- Plugins for extending the functionality of the COGS SDK.
-- Media Master Custom Content for displaying content through a Media Master or on the COGS Media Master app for [Android](https://play.google.com/store/apps/details?id=dog.clockwork.mobile.av) or [iOS](https://apps.apple.com/us/app/cogs-av/id6444409185).
+Create a Zone for every group of lights you want to control and create a scene in that zone for every state you might want your lights to be in. You can then use the "Set Zone To Scene" action with the name of the desired scene to activate it. If you want to turn all lights in a zone off, you can use the "Set Zone Off" action with the name of the zone.
 
-This repository uses [Turborepo](https://turbo.build) to manage the monorepo and also provides a way to generate new "apps" which are set up and ready to use the COGS SDK.
+If you have smart plugs, it may be annoying to need a zone for every single one and a scene to turn each one on. For this, we recommend the "Set Device On/Off" action.
 
-## Requirements
+> [!WARNING]
+> We do not recommend mixing the "Set Device On/Off" action and the zone/scene system. For lights, try to use scenes and zones. For plugs, use the individual device actions.
 
-- [NodeJS](https://nodejs.org/) with the version specified in `.node-version` (use a tool such as [mise](https://mise.jdx.dev) to automatically manage NodeJS versions).
-- [Yarn](https://yarnpkg.com/) installed via `corepack install`. If you don't have `corepack` installed, you can install it by running `npm install -g corepack` and then `corepack enable`.
+## Duration
+By default, all transitions take place over 0.4 seconds to give a smooth change. If you want to make transitions happen faster or slower, simply add ":{duration}" to the end of the name of the scene/zone/device you are controlling. E.g. you could do a "Set Zone To Scene" action with "green-lights:1.3" to make the transition take 1.3 seconds.
+# Example
+Here's an example of how you might set up your spaceship to light it up with COGS! 
+Zones:
+- Rocket boosters (3 colour bulbs)
+- Fuel gauge (LED Strip)
+- Cabin lights (5 white spotlights)
+- Front cabin lights (2 of the lights from the "Cabin lights" zone)
+- Rear cabin lights (the other 3 lights from the "Cabin lights" zone)
+- Smoke machine (Smart plug)
 
-## Getting Started
+For the rocket boosters, you could have 2 scenes:
+- Ignition (Dark orange)
+- Blazing (Bright red)
 
-Run the following command to install all dependencies of the project:
+You could trigger these from COGS using the "Set Zone To Scene" action, then once the rocket booster has been jettisoned, you want to turn off the bulbs! That's what the "Set Zone Off" action is for.
 
-```sh
-yarn install
-```
+> [!INFO]
+> You can't create a scene with every bulb in the zone off - that's why you need to use the "Set Zone Off" action!
 
-## Generating a new Media Master Custom Content or COGS Plugin
+For the fuel gauge, you could create scenes in the Hue app which have a gradient on the LED Strip to make the gauge show a slowly dropping amount of fuel, with a gradient from green at the top to red at the bottom.
 
-To generate a new Media Master Custom Content or COGS Plugin, run:
+For the cabin lights, you could turn all of them on or off using scenes in the "Cabin lights" zone, or control the front and the back independently using their respective zones. Remember though, if you set a scene on the "Cabin lights" zone, it will overwrite the colour of the bulbs set in the other scenes. You could use the optional [[#Duration]] parameter as described above to make the Cabin lights fade out slowly. Or even make the cabin lights shut off instantly, with a transition time of 0 seconds!
 
-```sh
-yarn new
-```
-
-This will prompt you to select the type of content or plugin you want to create.
-
-## Running the Project for Development
-
-You can start the project in development mode by running:
-
-```sh
-yarn start
-```
-
-This will set up each of the apps in development mode with hot reloading. You can then open COGS with the `test-project-pack` and then open the Media Master simulators for any Custom Content which you have.
-
-## Running Tests
-
-This project has tools set up to help test and check for common errors. You can run them all with `yarn test` or individually using:
-
-- `yarn run check-repo`: Run Sherif to check for common issues with the monorepo.
-- `yarn run check-types`: Run TypeScript to check for static type issues.
-- `yarn run check-lint`: Run ESLint to lint the project code to check for common issues.
-
-The repository is also set up to check for issues before committing or pushing to avoid pushing changes with issues. Github Actions will also run the full range of tests and checks on new pull requests and changes to the `main` branch.
-
-## Building the Project for Production
-
-You can build all `apps` for production by running:
-
-```sh
-yarn run build
-```
-
-## Repository Structure
-
-This project repository uses a number of tools to build and manage the project:
-
-- [Turborepo](https://turbo.build) for monorepo management, task running, and caching.
-- [TypeScript](https://www.typescriptlang.org/) for static type checking.
-- [Vite](https://vite.dev) for web app building and bundling.
-- [tsup](https://tsup.egoist.dev) for building the non web app packages using [esbuild](https://github.com/evanw/esbuild).
-- [ESLint](https://eslint.org/) for code linting.
-- [Prettier](https://prettier.io) for code formatting.
-- [Sherif](https://github.com/QuiiBz/sherif) for monorepo linting to check for common issues.
-
-Inside the monorepo there are a number of `apps` and `packages`. `apps` are the final deliverables of the project (custom content, plugins, etc). `packages` are shared libraries or utility packages which hold shared config.
-
-In the base example project we have:
-
-- `apps/`: This is where the custom content and plugins you create will live. See below for more details about using the generator.
-- `packages/`:
-  - `@repo/eslint-config`: Shared `eslint` configurations.
-  - `@repo/types`: Shared typed for the project.
-  - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo.
-
-## Github Actions
-
-When this project is pushed to Github, Github Actions will run the full range of tests and checks on new pull requests and changes to the `main` branch.
-
-It will also generate a zip package of the test COGS project pack along with built versions of each of the custom content and plugins you have generated.
+For the smoke machine, you could use the "Set Device On/Off" actions to turn it on when things go pear-shaped!
