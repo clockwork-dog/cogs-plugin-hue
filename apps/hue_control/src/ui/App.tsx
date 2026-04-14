@@ -186,7 +186,7 @@ export function App() {
             <Typography>
               Last sync:{" "}
               <TimeAgo
-                date={new Date(0)}
+                date={phase.lastSynced}
                 minPeriod={60}
                 formatter={timeAgoFormatter}
               />

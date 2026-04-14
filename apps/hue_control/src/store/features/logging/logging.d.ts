@@ -5,3 +5,10 @@ export type LogMessage = {
   datetime: number;
   message: string;
 };
+
+export type LogMessageWithId = {
+  level: LogLevel;
+  datetime: number;
+  message: string;
+  id: number;
+};

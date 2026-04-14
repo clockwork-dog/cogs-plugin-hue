@@ -66,7 +66,6 @@ export interface HueState {
   phase: HueSetupPhase;
   ipAddress: string;
   resetBehaviour: ResetBehaviour;
-  startupMode: boolean;
 }
 
 const initialState: HueState = {
@@ -75,7 +74,6 @@ const initialState: HueState = {
   },
   ipAddress: "",
   resetBehaviour: "None",
-  startupMode: true,
 };
 
 export const hueSlice = createSlice({
@@ -94,24 +92,13 @@ export const hueSlice = createSlice({
     moveToState: (state, action: PayloadAction<HueSetupPhase>) => {
       state.phase = action.payload;
     },
-    setZoneToScene: (state, action: PayloadAction<{ command: string }>) => {
-      state.startupMode = false;
-    },
-    setZoneOff: (state, action: PayloadAction<{ command: string }>) => {
-      state.startupMode = false;
-    },
+    setZoneToScene: (_state, _action: PayloadAction<{ command: string }>) => {},
+    setZoneOff: (_state, _action: PayloadAction<{ command: string }>) => {},
     setDevice: (
-      state,
-      action: PayloadAction<{ command: string; on: boolean }>,
-    ) => {
-      state.startupMode = false;
-    },
-    setAllOff: (state) => {
-      state.startupMode = false;
-    },
-    disableStartupMode: (state) => {
-      state.startupMode = false;
-    },
+      _state,
+      _action: PayloadAction<{ command: string; on: boolean }>,
+    ) => {},
+    setAllOff: (_state) => {},
   },
 });
 
