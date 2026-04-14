@@ -39,7 +39,7 @@ For the rocket boosters, you could have 2 scenes:
 
 You could trigger these from COGS using the "Set Zone To Scene" action, then once the rocket booster has been jettisoned, you want to turn off the bulbs! That's what the "Set Zone Off" action is for.
 
-> [!INFO]
+> [!NOTE]
 > You can't create a scene with every bulb in the zone off - that's why you need to use the "Set Zone Off" action!
 
 For the fuel gauge, you could create scenes in the Hue app which have a gradient on the LED Strip to make the gauge show a slowly dropping amount of fuel, with a gradient from green at the top to red at the bottom.
