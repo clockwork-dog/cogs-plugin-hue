@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { CogsShowPhaseChangedEvent } from "@clockworkdog/cogs-client";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import { useTypedCogsConnection } from "./hooks/useTypedCogsConnection";
+import { useTypedCogsConnection } from "../hooks/useTypedCogsConnection";
 import { HueConnectionManager } from "./HueConnectionManager";
 
 export function App() {
@@ -35,7 +35,7 @@ export function App() {
 
   const darkTheme = createTheme({
     palette: {
-      mode: "light",
+      mode: "dark",
     },
   });
 

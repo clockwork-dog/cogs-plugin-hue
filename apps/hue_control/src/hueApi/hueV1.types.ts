@@ -1,33 +1,20 @@
-export type HueV1Response<ResponseType> =
-  | HueV1ResponseSuccess<ResponseType>
-  | HueV1ResponseError;
+export class HueV1ResponseErrorStatusCode extends Error {
+  readonly type = "hue_v1_response_error_status_code";
+  constructor(public status: number) {
+    super();
+  }
+}
 
-export type HueV1ResponseSuccess<ResponseType> = {
-  result: "success";
-  response: ResponseType;
-};
+export class HueV1ResponseErrorBody extends Error {
+  readonly type = "hue_v1_response_error_body";
+  constructor(public errors: HueV1ErrorType[]) {
+    super();
+  }
+}
 
-export type HueV1ResponseError =
-  | HueV1ResponseErrorStatusCode
-  | HueV1ResponseErrorBody
-  | HueV1ResponseErrorNetwork;
-
-export type HueV1ResponseErrorStatusCode = {
-  result: "error";
-  error_cause: "status_code";
-  status: number;
-};
-
-export type HueV1ResponseErrorBody = {
-  result: "error";
-  error_cause: "body_error";
-  errors: HueV1ErrorType[];
-};
-
-export type HueV1ResponseErrorNetwork = {
-  result: "error";
-  error_cause: "network_error";
-};
+export class HueV1ResponseErrorNetwork extends Error {
+  readonly type = "hue_v1_response_error_network";
+}
 
 export type HueV1ErrorType = {
   type: number;

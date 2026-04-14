@@ -8,7 +8,7 @@ module.exports =
     description: "Basic Hue controller",
     icon: "lightbulb-on",
     version: "0.2.1",
-    // TODO: Check how backwards compatible we can make this
+    // TODO: Update this to reflect COGS version with SSL certificate change
     minCogsVersion: "5.10.0",
     config: [
       {
@@ -37,25 +37,25 @@ module.exports =
         {
           name: "Set Zone To Scene",
           value: {
-            type: "string", // `{scene_name}:{transition_time_ms}` (transition optional, default uses Hue default)
+            type: "string", // `{scene_name}:{transition_time_s}` (transition optional, default uses Hue default)
           },
         },
         {
           name: "Set Zone Off",
           value: {
-            type: "string", // `{zone_name}:{transition_time_ms}` (transition optional, default uses Hue default)
+            type: "string", // `{zone_name}:{transition_time_s}` (transition optional, default uses Hue default)
           },
         },
         {
           name: "Set Device Off",
           value: {
-            type: "string", // `{device_name}:{transition_time_ms}` (transition optional, default uses Hue default)
+            type: "string", // `{device_name}:{transition_time_s}` (transition optional, default uses Hue default)
           },
         },
         {
           name: "Set Device On",
           value: {
-            type: "string", // `{device_name}:{transition_time_ms}` (transition optional, default uses Hue default)
+            type: "string", // `{device_name}:{transition_time_s}` (transition optional, default uses Hue default)
           },
         },
       ],
