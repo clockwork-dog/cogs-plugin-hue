@@ -11,41 +11,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { hueActions } from "../store/features/hue/hueSlice";
 import { loggingActions } from "../store/features/logging/loggingSlice";
 import { useSelector } from "../store/store";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      style={{ flex: "1", overflow: "auto" }}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
 
 type StaticWarningType =
   | "scene_name_clash"
@@ -119,12 +88,10 @@ export default function HueController() {
 
   const { phase, resetBehaviour } = useSelector((state) => state.hue);
 
-  const [tab, setTab] = useState(0);
-
   if (phase.type === "authenticated_synced") {
     const syncedData = phase.syncedData;
     const getStaticWarnings = () => {
-      var warnings: StaticWarning[] = [];
+      let warnings: StaticWarning[] = [];
       warnings = warnings.concat(
         getDuplicates(syncedData.scenes.map((scene) => scene.name)).map(
           (duplicate) => ({
@@ -201,7 +168,7 @@ export default function HueController() {
         {staticWarnings.length > 0 ? (
           <Stack direction="column" spacing={1} sx={{ pb: "30px" }}>
             {staticWarnings.map((warning) => (
-              <WarningDisplay warning={warning} />
+              <WarningDisplay warning={warning} key={warning.key} />
             ))}
           </Stack>
         ) : (

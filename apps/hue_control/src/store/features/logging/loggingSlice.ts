@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LogMessage } from "./logging";
+import { LogMessage, LogMessageWithId } from "./logging";
 
 export interface LoggingState {
-  logs: LogMessage[];
+  logs: LogMessageWithId[];
+  currentId: number;
 }
 
 const initialState: LoggingState = {
   logs: [],
+  currentId: 0,
 };
 
 const MAX_LOG_LENGTH = 100;
@@ -16,7 +18,8 @@ export const loggingSlice = createSlice({
   initialState,
   reducers: {
     log: (state, action: PayloadAction<LogMessage>) => {
-      state.logs.push(action.payload);
+      state.logs.push({ ...action.payload, id: state.currentId });
+      state.currentId++;
       if (state.logs.length > MAX_LOG_LENGTH) {
         state.logs = state.logs.slice(-MAX_LOG_LENGTH);
       }

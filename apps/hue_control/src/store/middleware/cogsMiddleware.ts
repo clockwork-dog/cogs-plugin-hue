@@ -33,10 +33,12 @@ export const createCogsMiddleware = (
       }
     });
 
-    const doResetBehaviour = () => {
+    const doResetBehaviourIfNeeded = () => {
       const { phase, resetBehaviour } = getState().hue;
-      if (phase.type === "authenticated_synced") {
-        dispatch(hueActions.disableStartupMode());
+      if (
+        phase.type === "authenticated_synced" &&
+        cogsConnection.showPhase === "setup"
+      ) {
         dispatch(
           loggingActions.log({
             message: `Executing: Reset behaviour "${resetBehaviour}"`,
@@ -52,13 +54,11 @@ export const createCogsMiddleware = (
       }
     };
 
-    cogsConnection.addEventListener("showPhase", ({ showPhase }) => {
-      if (showPhase === "setup") {
-        doResetBehaviour();
-      }
+    cogsConnection.addEventListener("showPhase", () => {
+      doResetBehaviourIfNeeded();
     });
 
-    cogsConnection.store.addEventListener("items", (event) => {
+    cogsConnection.store.addEventListener("items", () => {
       // Initial store sync - update our local store
       if (getState().hue.phase.type === "waiting_for_cogs") {
         dispatch(
@@ -78,7 +78,7 @@ export const createCogsMiddleware = (
     return (next) => (action) => {
       const prevPhase = getState().hue.phase;
       const result = next(action);
-      const { phase, startupMode } = getState().hue;
+      const phase = getState().hue.phase;
 
       if (prevPhase.type !== phase.type) {
         cogsConnection.setState({
@@ -113,8 +113,8 @@ export const createCogsMiddleware = (
           });
         }
 
-        if (phase.type === "authenticated_synced" && startupMode) {
-          doResetBehaviour();
+        if (phase.type === "authenticated_synced") {
+          doResetBehaviourIfNeeded();
         }
       }
 

@@ -33,7 +33,7 @@ function apiV1FetchUnauthenticated<BodyType, ResponseType>(
         method,
         signal: AbortSignal.timeout(TIMEOUT),
       }),
-    (error) => {
+    () => {
       return new HueV1ResponseErrorNetwork();
     },
   ).map(async (response) => {

@@ -18,7 +18,7 @@ export default function Console() {
       </Button>
       <Stack spacing={0.5}>
         {logMessages.map((log) => (
-          <Alert variant="filled" severity={log.level}>
+          <Alert variant="filled" severity={log.level} key={log.id}>
             {new Date(log.datetime).toLocaleString()}: {log.message}
           </Alert>
         ))}
