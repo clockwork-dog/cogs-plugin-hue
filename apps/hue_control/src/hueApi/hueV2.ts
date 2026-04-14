@@ -96,7 +96,7 @@ export function putLight(
   id: string,
   light: HueV2LightPut,
 ) {
-  apiFetch<HueV2LightPut, HueV2LightReference[]>(
+  return apiFetch<HueV2LightPut, HueV2LightReference[]>(
     connection,
     `${LIGHT_ENDPOINT}/${id}`,
     PUT,

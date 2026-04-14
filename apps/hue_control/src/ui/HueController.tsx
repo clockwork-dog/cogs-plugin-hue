@@ -1,5 +1,3 @@
-import EditIcon from "@mui/icons-material/Edit";
-import ListIcon from "@mui/icons-material/List";
 import {
   Alert,
   Box,
@@ -11,18 +9,13 @@ import {
   ListItem,
   Paper,
   Stack,
-  Tab,
-  Tabs,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import TimeAgo from "react-timeago";
-import { makeIntlFormatter } from "react-timeago/defaultFormatter";
 import { hueActions } from "../store/features/hue/hueSlice";
 import { loggingActions } from "../store/features/logging/loggingSlice";
 import { useSelector } from "../store/store";
-import { Console } from "./Console";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -203,241 +196,177 @@ export default function HueController() {
 
     const staticWarnings = getStaticWarnings();
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-      setTab(newValue);
-    };
-
-    const timeAgoFormatter = makeIntlFormatter({ style: "narrow" });
-
     return (
-      <Stack direction="column" sx={{ height: "100%" }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={tab}
-            onChange={handleTabChange}
-            aria-label="basic tabs example"
-            centered
-          >
-            <Tab
-              icon={<EditIcon />}
-              iconPosition="start"
-              label="Setup"
-              {...a11yProps(0)}
-            />
-            <Tab
-              icon={<ListIcon />}
-              iconPosition="start"
-              label="Console"
-              {...a11yProps(1)}
-            />
-          </Tabs>
-        </Box>
-        <Stack
-          direction="row"
-          sx={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            m: "15px",
-            alignItems: "center",
-          }}
-          spacing={2}
-        >
-          <Typography>
-            Last sync:{" "}
-            <TimeAgo
-              date={new Date(0)}
-              minPeriod={60}
-              formatter={timeAgoFormatter}
-            />
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={() => {
-              dispatch(
-                hueActions.moveToState({
-                  type: "authenticated_not_synced",
-                  apiKeys: phase.apiKeys,
-                  bridgeId: phase.bridgeId,
-                }),
-              );
-            }}
-          >
-            Sync
-          </Button>
-        </Stack>
-        <TabPanel value={tab} index={0}>
-          {staticWarnings.length > 0 ? (
-            <Stack direction="column" spacing={1} sx={{ pb: "30px" }}>
-              {staticWarnings.map((warning) => (
-                <WarningDisplay warning={warning} />
-              ))}
-            </Stack>
-          ) : (
-            <></>
-          )}
+      <>
+        {staticWarnings.length > 0 ? (
+          <Stack direction="column" spacing={1} sx={{ pb: "30px" }}>
+            {staticWarnings.map((warning) => (
+              <WarningDisplay warning={warning} />
+            ))}
+          </Stack>
+        ) : (
+          <></>
+        )}
 
-          <Typography variant="h3">Zones</Typography>
-          <Box
-            sx={{
-              width: "100%",
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fill, minmax(min(200px, 100%), 1fr))",
-              gap: 2,
-              marginTop: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            {syncedData.zones.map((zone) => {
-              return (
-                <Paper key={zone.id}>
-                  <Stack
-                    direction="row"
-                    sx={{
-                      justifyContent: "space-between",
-                      width: "100%",
-                      p: "16px",
+        <Typography variant="h3">Zones</Typography>
+        <Box
+          sx={{
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fill, minmax(min(200px, 100%), 1fr))",
+            gap: 2,
+            marginTop: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          {syncedData.zones.map((zone) => {
+            return (
+              <Paper key={zone.id}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    width: "100%",
+                    p: "16px",
+                  }}
+                >
+                  <Typography variant="h6">{zone.name}</Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      dispatch(
+                        loggingActions.log({
+                          message: `Manual: “Set Zone Off” for zone "${zone.name}"`,
+                          level: "info",
+                          datetime: Date.now(),
+                        }),
+                      );
+                      dispatch(hueActions.setZoneOff({ command: zone.name }));
                     }}
                   >
-                    <Typography variant="h6">{zone.name}</Typography>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => {
-                        dispatch(
-                          loggingActions.log({
-                            message: `Manual: “Set Zone Off” for zone "${zone.name}"`,
-                            level: "info",
-                            datetime: Date.now(),
-                          }),
-                        );
-                        dispatch(hueActions.setZoneOff({ command: zone.name }));
-                      }}
-                    >
-                      Off
-                    </Button>
-                  </Stack>
-                  <Divider />
-                  <List dense>
-                    {syncedData.scenes
-                      .filter((scene) => scene.lightgroupId === zone.id)
-                      .map((scene) => {
-                        return (
-                          <ListItem key={scene.id}>
-                            <Stack
-                              direction="row"
-                              sx={{
-                                justifyContent: "space-between",
-                                width: "100%",
+                    Off
+                  </Button>
+                </Stack>
+                <Divider />
+                <List dense>
+                  {syncedData.scenes
+                    .filter((scene) => scene.lightgroupId === zone.id)
+                    .map((scene) => {
+                      return (
+                        <ListItem key={scene.id}>
+                          <Stack
+                            direction="row"
+                            sx={{
+                              justifyContent: "space-between",
+                              width: "100%",
+                            }}
+                          >
+                            <Typography>{scene.name}</Typography>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => {
+                                dispatch(
+                                  loggingActions.log({
+                                    message: `Manual: “Set Zone To Scene” for scene "${scene.name}"`,
+                                    level: "info",
+                                    datetime: Date.now(),
+                                  }),
+                                );
+                                dispatch(
+                                  hueActions.setZoneToScene({
+                                    command: scene.name,
+                                  }),
+                                );
                               }}
                             >
-                              <Typography>{scene.name}</Typography>
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                onClick={() => {
-                                  dispatch(
-                                    loggingActions.log({
-                                      message: `Manual: “Set Zone To Scene” for scene "${scene.name}"`,
-                                      level: "info",
-                                      datetime: Date.now(),
-                                    }),
-                                  );
-                                  dispatch(
-                                    hueActions.setZoneToScene({
-                                      command: scene.name,
-                                    }),
-                                  );
-                                }}
-                              >
-                                Set
-                              </Button>
-                            </Stack>
-                          </ListItem>
-                        );
-                      })}
-                  </List>
-                </Paper>
+                              Set
+                            </Button>
+                          </Stack>
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              </Paper>
+            );
+          })}
+        </Box>
+        <Typography variant="h3" sx={{ pt: "30px" }}>
+          Devices
+        </Typography>
+        <Stack
+          direction="column"
+          spacing={2}
+          sx={{ marginTop: "10px", marginBottom: "10px" }}
+        >
+          {syncedData.lights
+            //.flatMap((light) => [light, light, light, light, light])
+            .map((light) => {
+              return (
+                <Card key={light.id} sx={{ width: "30em" }}>
+                  <CardContent>
+                    <Stack
+                      direction="row"
+                      sx={{
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography>{light.name}</Typography>
+                      <Stack direction="row" spacing={0.5}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => {
+                            dispatch(
+                              loggingActions.log({
+                                message: `Manual: “Set Device Off” for device "${light.name}"`,
+                                level: "info",
+                                datetime: Date.now(),
+                              }),
+                            );
+                            dispatch(
+                              hueActions.setDevice({
+                                command: light.name,
+                                on: false,
+                              }),
+                            );
+                          }}
+                        >
+                          Off
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => {
+                            dispatch(
+                              loggingActions.log({
+                                message: `Manual: “Set Device On" for device "${light.name}"`,
+                                level: "info",
+                                datetime: Date.now(),
+                              }),
+                            );
+                            dispatch(
+                              hueActions.setDevice({
+                                command: light.name,
+                                on: true,
+                              }),
+                            );
+                          }}
+                        >
+                          On
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </CardContent>
+                </Card>
               );
             })}
-          </Box>
-          <Typography variant="h3" sx={{ pt: "30px" }}>
-            Devices
-          </Typography>
-          <Stack
-            direction="column"
-            spacing={2}
-            sx={{ marginTop: "10px", marginBottom: "10px" }}
-          >
-            {syncedData.lights
-              //.flatMap((light) => [light, light, light, light, light])
-              .map((light) => {
-                return (
-                  <Card key={light.id} sx={{ width: "30em" }}>
-                    <CardContent>
-                      <Stack
-                        direction="row"
-                        sx={{
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography>{light.name}</Typography>
-                        <Stack direction="row" spacing={0.5}>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => {
-                              dispatch(
-                                loggingActions.log({
-                                  message: `Manual: “Set Device Off” for device "${light.name}"`,
-                                  level: "info",
-                                  datetime: Date.now(),
-                                }),
-                              );
-                              dispatch(
-                                hueActions.setDevice({
-                                  command: light.name,
-                                  on: false,
-                                }),
-                              );
-                            }}
-                          >
-                            Off
-                          </Button>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => {
-                              dispatch(
-                                loggingActions.log({
-                                  message: `Manual: “Set Device On" for device "${light.name}"`,
-                                  level: "info",
-                                  datetime: Date.now(),
-                                }),
-                              );
-                              dispatch(
-                                hueActions.setDevice({
-                                  command: light.name,
-                                  on: true,
-                                }),
-                              );
-                            }}
-                          >
-                            On
-                          </Button>
-                        </Stack>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-          </Stack>
-        </TabPanel>
-        <TabPanel value={tab} index={1}>
-          <Console />
-        </TabPanel>
-      </Stack>
+        </Stack>
+      </>
     );
+  } else {
+    return <></>;
   }
 }

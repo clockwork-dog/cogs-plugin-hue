@@ -34,19 +34,21 @@ export const createCogsMiddleware = (
     });
 
     const doResetBehaviour = () => {
-      const resetBehaviour = getState().hue.resetBehaviour;
-      dispatch(hueActions.disableStartupMode());
-      dispatch(
-        loggingActions.log({
-          message: `Executing: Reset behaviour "${resetBehaviour}"`,
-          level: "info",
-          datetime: Date.now(),
-        }),
-      );
-      if (resetBehaviour === "All Off") {
-        dispatch(hueActions.setAllOff());
-      } else if (resetBehaviour === "Default Scene") {
-        dispatch(hueActions.setZoneToScene({ command: "Default" }));
+      const { phase, resetBehaviour } = getState().hue;
+      if (phase.type === "authenticated_synced") {
+        dispatch(hueActions.disableStartupMode());
+        dispatch(
+          loggingActions.log({
+            message: `Executing: Reset behaviour "${resetBehaviour}"`,
+            level: "info",
+            datetime: Date.now(),
+          }),
+        );
+        if (resetBehaviour === "All Off") {
+          dispatch(hueActions.setAllOff());
+        } else if (resetBehaviour === "Default Scene") {
+          dispatch(hueActions.setZoneToScene({ command: "Default" }));
+        }
       }
     };
 
@@ -87,6 +89,13 @@ export const createCogsMiddleware = (
           const apiKeys = getApiKeysFromStore(phase.bridgeId);
           if (apiKeys) {
             dispatch(
+              loggingActions.log({
+                message: `Authenticated: Found API keys for bridge "${phase.bridgeId}" in store`,
+                datetime: Date.now(),
+                level: "info",
+              }),
+            );
+            dispatch(
               hueActions.moveToState({
                 type: "authenticated_not_synced",
                 bridgeId: phase.bridgeId,
@@ -94,6 +103,14 @@ export const createCogsMiddleware = (
               }),
             );
           }
+        }
+
+        if (phase.type === "authenticated_not_synced") {
+          cogsConnection.store.setItems({
+            apiKeys: {
+              [phase.bridgeId]: phase.apiKeys,
+            },
+          });
         }
 
         if (phase.type === "authenticated_synced" && startupMode) {

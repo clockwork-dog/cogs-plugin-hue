@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { loggingActions } from "../store/features/logging/loggingSlice";
 import { useSelector } from "../store/store";
 
-export function Console() {
+export default function Console() {
   const logMessages = useSelector((state) => state.logging.logs);
   const dispatch = useDispatch();
 
@@ -19,7 +19,7 @@ export function Console() {
       <Stack spacing={0.5}>
         {logMessages.map((log) => (
           <Alert variant="filled" severity={log.level}>
-            {log.datetime.toLocaleString()}: {log.message}
+            {new Date(log.datetime).toLocaleString()}: {log.message}
           </Alert>
         ))}
       </Stack>
