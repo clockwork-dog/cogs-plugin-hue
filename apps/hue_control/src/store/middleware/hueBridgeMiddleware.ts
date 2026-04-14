@@ -16,6 +16,10 @@ import {
   putLight,
   putScene,
 } from "../../hueApi/hueV2";
+import {
+  HueV2ResponseErrorNetwork,
+  HueV2ResponseErrorStatusCode,
+} from "../../hueApi/hueV2.types";
 import { hueActions } from "../features/hue/hueSlice";
 import { loggingActions } from "../features/logging/loggingSlice";
 import { AppMiddlewareAPI } from "../store";
@@ -168,7 +172,7 @@ export const createHueBridgeMiddleware = (): Middleware => {
         if (authResult.ok) {
           dispatch(
             loggingActions.log({
-              message: `Authenticated: Got API keys for bridge "${phase.bridgeId}"`,
+              message: `Authenticated: Recieved API keys for bridge "${phase.bridgeId}"`,
               datetime: Date.now(),
               level: "info",
             }),
@@ -253,6 +257,13 @@ export const createHueBridgeMiddleware = (): Middleware => {
             zonesResponse,
             bridgeHomesResponse,
           ] = syncResult.value;
+          dispatch(
+            loggingActions.log({
+              message: `Synced: Found ${scenesResponse.length} scenes, ${zonesResponse.length} zones and ${lightsResponse.length} devices`,
+              datetime: Date.now(),
+              level: "info",
+            }),
+          );
           dispatch(
             hueActions.moveToState({
               type: "authenticated_synced",
@@ -345,6 +356,56 @@ export const createHueBridgeMiddleware = (): Middleware => {
         hueActions.setAllOff.match(action)
       ) {
         if (phase.type === "authenticated_synced") {
+          const processErrorInAction = (
+            error: HueV2ResponseErrorNetwork | HueV2ResponseErrorStatusCode,
+          ) => {
+            if (error.type === "hue_v2_network") {
+              dispatch(
+                loggingActions.log({
+                  message:
+                    "Disconnect: Network issue while executing command. Will attempt to reconnect.",
+                  datetime: Date.now(),
+                  level: "warning",
+                }),
+              );
+              dispatch(hueActions.moveToState({ type: "finding_bridge_id" }));
+            } else if (error.type === "hue_v2_status_code") {
+              if (error.status === 401) {
+                dispatch(
+                  loggingActions.log({
+                    message:
+                      "Unathenticated: Bridge may have been factory reset or the API key revoked. Will attempt to reauthenticate.",
+                    datetime: Date.now(),
+                    level: "warning",
+                  }),
+                );
+                dispatch(
+                  hueActions.moveToState({
+                    type: "authenticating_with_bridge",
+                    bridgeId: phase.bridgeId,
+                  }),
+                );
+              } else if (error.status === 429) {
+                dispatch(
+                  loggingActions.log({
+                    message: `Error: Too many requests to bridge. Please slow down your requests, or combine them using scenes if possible. For more information, see the documentation for this plugin.`,
+                    datetime: Date.now(),
+                    level: "error",
+                  }),
+                );
+              } else {
+                console.error(error);
+                dispatch(
+                  loggingActions.log({
+                    message: `Error: Bridge responded with error code ${error.status} to command. Full error has been printed to developer logs.`,
+                    datetime: Date.now(),
+                    level: "error",
+                  }),
+                );
+              }
+            }
+          };
+
           const ipAddress = getState().hue.ipAddress;
           const connection: HueBridgeConnection = {
             ipAddress,
@@ -354,87 +415,98 @@ export const createHueBridgeMiddleware = (): Middleware => {
           if (hueActions.setAllOff.match(action)) {
             putGroupedLight(connection, syncedData.bridgeHomeLightgroupId, {
               on: { on: false },
+            }).then((result) => {
+              if (!result.ok) {
+                processErrorInAction(result.error);
+              }
             });
           } else {
             const parseResult = parseCommand(action.payload.command);
             if (parseResult.ok) {
               const { name, duration_ms } = parseResult.value;
 
-              if (hueActions.setZoneToScene.match(action)) {
-                const showScene = syncedData.scenes.filter(
-                  (scene) => scene.name === name,
-                )[0];
-                if (showScene) {
-                  dispatch(
-                    loggingActions.log({
-                      message: `Executed: “Set Zone To Scene” for scene ${name}.`,
-                      level: "info",
-                      datetime: Date.now(),
-                    }),
-                  );
-                  putScene(connection, showScene.id, {
-                    recall: { action: "active", duration: duration_ms },
-                  });
-                } else {
-                  dispatch(
-                    loggingActions.log({
-                      message: `Ignored: “Set Zone To Scene” for scene ${name}. Scene does not exist.`,
-                      level: "warning",
-                      datetime: Date.now(),
-                    }),
-                  );
+              const executeAction = () => {
+                if (hueActions.setZoneToScene.match(action)) {
+                  const showScene = syncedData.scenes.filter(
+                    (scene) => scene.name === name,
+                  )[0];
+                  if (showScene) {
+                    dispatch(
+                      loggingActions.log({
+                        message: `Executed: “Set Zone To Scene” for scene "${name}".`,
+                        level: "info",
+                        datetime: Date.now(),
+                      }),
+                    );
+                    return putScene(connection, showScene.id, {
+                      recall: { action: "active", duration: duration_ms },
+                    });
+                  } else {
+                    dispatch(
+                      loggingActions.log({
+                        message: `Ignored: “Set Zone To Scene” for scene "${name}". Scene does not exist.`,
+                        level: "warning",
+                        datetime: Date.now(),
+                      }),
+                    );
+                  }
+                } else if (hueActions.setZoneOff.match(action)) {
+                  const zone = syncedData.zones.filter(
+                    (zone) => zone.name === name,
+                  )[0];
+                  if (zone) {
+                    dispatch(
+                      loggingActions.log({
+                        message: `Executed: “Set Zone Off” for zone "${name}".`,
+                        level: "info",
+                        datetime: Date.now(),
+                      }),
+                    );
+                    return putGroupedLight(connection, zone.lightgroupId, {
+                      on: { on: false },
+                    });
+                  } else {
+                    dispatch(
+                      loggingActions.log({
+                        message: `Ignored: “Set Zone Off” for zone "${name}". Zone does not exist.`,
+                        level: "warning",
+                        datetime: Date.now(),
+                      }),
+                    );
+                  }
+                } else if (hueActions.setDevice.match(action)) {
+                  const light = syncedData.lights.filter(
+                    (light) => light.name === name,
+                  )[0];
+                  if (light) {
+                    dispatch(
+                      loggingActions.log({
+                        message: `Executed: “Set Device ${action.payload.on ? "On" : "Off"}" for device "${name}".`,
+                        level: "info",
+                        datetime: Date.now(),
+                      }),
+                    );
+                    return putLight(connection, light.id, {
+                      on: { on: action.payload.on },
+                    });
+                  } else {
+                    dispatch(
+                      loggingActions.log({
+                        message: `Ignored: “Set Device ${action.payload.on ? "On" : "Off"}" for device "${name}". Device does not exist.`,
+                        level: "warning",
+                        datetime: Date.now(),
+                      }),
+                    );
+                  }
                 }
-              }
-              if (hueActions.setZoneOff.match(action)) {
-                const zone = syncedData.zones.filter(
-                  (zone) => zone.name === name,
-                )[0];
-                if (zone) {
-                  dispatch(
-                    loggingActions.log({
-                      message: `Executed: “Set Zone Off” for zone ${name}.`,
-                      level: "info",
-                      datetime: Date.now(),
-                    }),
-                  );
-                  putGroupedLight(connection, zone.lightgroupId, {
-                    on: { on: false },
-                  });
-                } else {
-                  dispatch(
-                    loggingActions.log({
-                      message: `Ignored: “Set Zone Off” for zone ${name}. Zone does not exist.`,
-                      level: "warning",
-                      datetime: Date.now(),
-                    }),
-                  );
+                return undefined;
+              };
+
+              executeAction()?.then((result) => {
+                if (!result.ok) {
+                  processErrorInAction(result.error);
                 }
-              }
-              if (hueActions.setDevice.match(action)) {
-                const light = syncedData.lights.filter(
-                  (light) => light.name === name,
-                )[0];
-                if (light) {
-                  dispatch(
-                    loggingActions.log({
-                      message: `Executed: “Set Device ${action.payload.on ? "On" : "Off"}" for device ${name}.`,
-                      level: "info",
-                      datetime: Date.now(),
-                    }),
-                  );
-                  putLight(connection, light.id, {
-                    on: { on: action.payload.on },
-                  });
-                } else {
-                  dispatch(
-                    loggingActions.log({
-                      message: `Ignored: “Set Device ${action.payload.on ? "On" : "Off"}" for device ${name}. Device does not exist.`,
-                      level: "warning",
-                      datetime: Date.now(),
-                    }),
-                  );
-                }
-              }
+              });
             } else {
               const specificMessage = parseResult
                 .match()
