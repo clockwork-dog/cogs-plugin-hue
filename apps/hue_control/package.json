@@ -16,9 +16,14 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
+    "@reduxjs/toolkit": "^2.11.2",
     "es-toolkit": "^1.39.6",
+    "immer": "^11.1.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-redux": "^9.2.0",
+    "react-timeago": "^8.3.0",
+    "typescript-result": "^3.5.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

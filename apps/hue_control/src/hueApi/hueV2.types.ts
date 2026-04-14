@@ -1,28 +1,18 @@
 // https://developers.meethue.com/develop/hue-api-v2/api-reference
-export type HueV2Response<ResponseType> =
-  | HueV2ResponseSuccess<ResponseType>
-  | HueV2ResponseError;
 
-export type HueV2ResponseSuccess<ResponseType> = {
-  result: "success";
-  response: ResponseType;
-};
+export class HueV2ResponseErrorStatusCode extends Error {
+  readonly type = "hue_v2_status_code";
+  constructor(
+    public status: number,
+    public errors: HueV2ErrorType[],
+  ) {
+    super();
+  }
+}
 
-export type HueV2ResponseError =
-  | HueV2ResponseErrorStatusCode
-  | HueV2ResponseErrorNetwork;
-
-export type HueV2ResponseErrorStatusCode = {
-  result: "error";
-  error_cause: "status_code";
-  status: number;
-  errors: HueV2ErrorType[];
-};
-
-export type HueV2ResponseErrorNetwork = {
-  result: "error";
-  error_cause: "network_error";
-};
+export class HueV2ResponseErrorNetwork extends Error {
+  readonly type = "hue_v2_network";
+}
 
 export type HueV2ErrorType = {
   description: string;

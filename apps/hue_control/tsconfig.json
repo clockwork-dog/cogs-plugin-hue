@@ -4,7 +4,8 @@
     "@repo/typescript-config/react.json"
   ],
   "compilerOptions": {
-    "checkJs": true
+    "checkJs": true,
+    "strict": true
   },
   "exclude": [
     "dist",
