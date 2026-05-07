@@ -292,7 +292,7 @@ export type HueV2DeviceUsertestGet = {
   usertest: boolean;
 };
 
-export type HueV2DeviceModeGet = any;
+export type HueV2DeviceModeGet = unknown;
 
 export type HueV2DeviceGet = HueV2GenericResource & {
   type: "device";
@@ -379,19 +379,19 @@ export type HueV2LightColorGet = {
   gamut_type: HueV2GamutType;
 };
 
-export type HueV2LightDynamicsGet = any;
-export type HueV2LightAlertGet = any;
-export type HueV2LightSignalingGet = any;
-export type HueV2LightGradientGet = any;
-export type HueV2LightContentConfigGet = any;
-export type HueV2LightGeometryGet = any;
+export type HueV2LightDynamicsGet = unknown;
+export type HueV2LightAlertGet = unknown;
+export type HueV2LightSignalingGet = unknown;
+export type HueV2LightGradientGet = unknown;
+export type HueV2LightContentConfigGet = unknown;
+export type HueV2LightGeometryGet = unknown;
 
 export type HueV2LightTimedEffectType = "sunrise" | "sunset" | "no_effect";
 
 export type HueV2LightTimedEffectsPut = {
   effect: HueV2LightTimedEffectType;
 };
-export type HueV2LightTimedEffectsGet = any;
+export type HueV2LightTimedEffectsGet = unknown;
 
 export type HueV2LightModeGet = "normal" | "streaming";
 
@@ -536,12 +536,12 @@ export type HueV2LightColorTempDeltaPut = {
   mirek_delta?: number;
 };
 
-export type HueV2LightDynamicsPut = any;
-export type HueV2LightAlertPut = any;
-export type HueV2LightSignalingPut = any;
-export type HueV2LightGradientPut = any;
-export type HueV2LightContentConfigPut = any;
-export type HueV2LightGeometryPut = any;
+export type HueV2LightDynamicsPut = unknown;
+export type HueV2LightAlertPut = unknown;
+export type HueV2LightSignalingPut = unknown;
+export type HueV2LightGradientPut = unknown;
+export type HueV2LightContentConfigPut = unknown;
+export type HueV2LightGeometryPut = unknown;
 
 export type HueV2LightPut = {
   metadata?: HueV2LightMetadataPut;
@@ -584,8 +584,8 @@ export type HueV2SceneTargetedAction = {
   action: HueV2SceneAction;
 };
 
-export type HueV2ScenePaletteGet = any;
-export type HueV2ScenePalettePut = any;
+export type HueV2ScenePaletteGet = unknown;
+export type HueV2ScenePalettePut = unknown;
 
 export type HueV2SceneMetadataPut = {
   name?: string;
