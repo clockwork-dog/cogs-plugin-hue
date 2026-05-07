@@ -6,7 +6,7 @@ This is a plugin to allow [COGS](https://cogs.show/) to interact with lights and
 ## Quick-start
 1. If you haven't already, set up your Hue bridge with the Hue app
 2. In the app, go to `Settings > Hue Bridges > {Your Bridge Name}` and note down the `IP address`. This should be four numbers separated by dots e.g. "5.6.7.8".
-3. Download the plugin [here](https://example.org) and unzip the folder into the `plugins` folder in your COGS project
+3. Download the plugin [here](https://github.com/clockwork-dog/cogs-plugin-hue/releases/latest) and unzip the folder into the `plugins` folder in your COGS project
 4. Open the project in COGS and enable the Hue Control in the Plugins menu
 5. Go to the new Hue Control section in the left panel and input the IP address you found earlier
 6. Follow the instructions in the plugin window to pair COGS with your bridge
