@@ -3,8 +3,10 @@ import { AppMiddlewareAPI } from "../store";
 
 export const createLoggingMiddleware = (): Middleware => {
   return (api: AppMiddlewareAPI) => {
-    const { dispatch, getState } = api;
+    const { getState } = api;
     return (next) => (action) => {
+      console.log("Action:", action, ", state:", getState());
+
       const result = next(action);
 
       return result;

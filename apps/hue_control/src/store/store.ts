@@ -10,6 +10,8 @@ import { createCogsMiddleware } from "./middleware/cogsMiddleware";
 import { createHueBridgeMiddleware } from "./middleware/hueBridgeMiddleware";
 import { createLoggingMiddleware } from "./middleware/loggingMiddleware";
 
+const LOGGING_ENABLED = false;
+
 export const createStore = (cogsConnection: TypedCogsConnection) =>
   configureStore({
     reducer: { logging: loggingReducer, hue: hueReducer },
@@ -17,7 +19,7 @@ export const createStore = (cogsConnection: TypedCogsConnection) =>
       getDefaultMiddleware().concat([
         createCogsMiddleware(cogsConnection),
         createHueBridgeMiddleware(),
-        createLoggingMiddleware(),
+        ...(LOGGING_ENABLED ? [createLoggingMiddleware()] : []),
       ]),
   });
 
