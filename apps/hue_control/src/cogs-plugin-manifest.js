@@ -7,9 +7,24 @@ module.exports =
     name: "Hue Control",
     description: "Basic Hue controller",
     icon: "lightbulb-on",
-    version: "0.2.1",
-    // TODO: Update this to reflect COGS version with SSL certificate change
-    minCogsVersion: "5.10.0",
+    version: "0.2.2",
+    minCogsVersion: "5.11.0",
+    permissions: {
+      network: {
+        access: [
+          // Allow communication with a Hue Bridge on the local network
+          // using HTTPS with the Hue self-signed certificate.
+          {
+            hosts: ["private:443"],
+            // Certificates from https://developers.meethue.com/develop/application-design-guidance/using-https/
+            caCertificates: [
+              "certs/hue_bridge.active.pem",
+              "certs/hue_bridge.secondary.pem",
+            ],
+          },
+        ],
+      },
+    },
     config: [
       {
         name: "Bridge IP Address",

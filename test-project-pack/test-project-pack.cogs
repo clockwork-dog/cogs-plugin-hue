@@ -5,7 +5,7 @@
   "channels": [],
   "clients": [],
   "project": {
-    "formatVersion": "5.6",
+    "formatVersion": "5.11",
     "locked": false
   },
   "resetChecks": [],
@@ -16,8 +16,6 @@
   "scenes": {
     "system": {
       "preShow": {
-        "variables": [],
-        "values": [],
         "behaviors": []
       },
       "show": {
@@ -55,7 +53,18 @@
     "autoStart": true,
     "showTimeElapsed": true,
     "sceneDashboardsRows": 1,
-    "runViewWhenShowStarts": ""
+    "runViewWhenShowStarts": "",
+    "runViewWhenPreshowStarts": ""
   },
-  "plugins": {}
+  "plugins": {
+    "dog.clockwork.hue.cogsplugin": {
+      "version": "0.2.2",
+      "enabled": true,
+      "config": {
+        "Bridge IP Address": ""
+      },
+      "defaultState": {},
+      "stateExpressions": {}
+    }
+  }
 }

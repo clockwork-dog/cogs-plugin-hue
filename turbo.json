@@ -4,7 +4,7 @@
     "build-prod": {
       "dependsOn": ["^build-prod"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**"]
+      "outputs": ["dog.clockwork.hue.cogsplugin"]
     },
     "dev": {
       "dependsOn": ["^build-prod"],
