@@ -65,32 +65,36 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build-environment
       - run: yarn run build
+      - name: Sign plugin
+        run: npx -y @clockworkdog/cogs-plugin-verification@3.2 sign apps/hue_control/dog.clockwork.hue.cogsplugin
+        env:
+          COGS_PRIVATE_KEY: ${{ secrets.COGS_ACCOUNTS_PRODUCTION_PRIVATE_KEY }}
       # Copy the test-project-pack with symlinks followed and copied
       - run: cp -rL test-project-pack test-project-pack-no-symlinks
       # Upload a zip artifact for this run
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ github.sha }}-test-project-pack
-          path: test-project-pack-no-symlinks
+          name: dog.clockwork.hue.cogsplugin
+          path: apps/hue_control/dog.clockwork.hue.cogsplugin
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ github.sha }}
-          path: apps/hue_control/dog.clockwork.hue.cogsplugin
+          name: ${{ github.event.repository.name }}-${{ github.sha }}-test-project-pack
+          path: test-project-pack-no-symlinks
       # Upload to Github Releases if this is a tagged build
-      - name: Zip test project for Github release
-        if: github.ref_type == 'tag'
-        run: |
-          mv test-project-pack-no-symlinks "${{ github.event.repository.name }}-${{ github.ref_name }}"
-          zip -r "${{ github.event.repository.name }}-${{ github.ref_name }}.zip" "${{ github.event.repository.name }}-${{ github.ref_name }}"
       - name: Zip plugin for Github release
         if: github.ref_type == 'tag'
         run: |
           mv apps/hue_control/dog.clockwork.hue.cogsplugin dog.clockwork.hue.cogsplugin
           zip -r "dog.clockwork.hue.cogsplugin-${{ github.ref_name }}.zip" dog.clockwork.hue.cogsplugin
+      - name: Zip test project for Github release
+        if: github.ref_type == 'tag'
+        run: |
+          mv test-project-pack-no-symlinks "${{ github.event.repository.name }}-${{ github.ref_name }}"
+          zip -r "${{ github.event.repository.name }}-${{ github.ref_name }}.zip" "${{ github.event.repository.name }}-${{ github.ref_name }}"
       - name: Release
         uses: softprops/action-gh-release@v3
         if: github.ref_type == 'tag'
         with:
           files: |
-            ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
             dog.clockwork.hue.cogsplugin-${{ github.ref_name }}.zip
+            ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
