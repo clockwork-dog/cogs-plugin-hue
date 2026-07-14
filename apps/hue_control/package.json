@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite --clearScreen false",
-    "build-prod": "vite build",
+    "build-prod": "vite build && asar pack dist dog.clockwork.hue.cogsplugin",
     "types": "tsc",
     "lint": "eslint"
   },
   "dependencies": {
-    "@clockworkdog/cogs-client": "2",
-    "@clockworkdog/cogs-client-react": "2",
+    "@clockworkdog/cogs-client": "3",
+    "@clockworkdog/cogs-client-react": "3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.0.0",
@@ -26,6 +26,7 @@
     "typescript-result": "^3.5.2"
   },
   "devDependencies": {
+    "@electron/asar": "^4.2.0",
     "@repo/eslint-config": "*",
     "@repo/types": "*",
     "@repo/typescript-config": "*",
