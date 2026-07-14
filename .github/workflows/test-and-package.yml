@@ -70,16 +70,27 @@ jobs:
       # Upload a zip artifact for this run
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-${{ github.sha }}-test-project-pack
           path: test-project-pack-no-symlinks
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-${{ github.sha }}
+          path: apps/hue_control/dog.clockwork.hue.cogsplugin
       # Upload to Github Releases if this is a tagged build
-      - name: Zip for Github release
+      - name: Zip test project for Github release
         if: github.ref_type == 'tag'
         run: |
           mv test-project-pack-no-symlinks "${{ github.event.repository.name }}-${{ github.ref_name }}"
           zip -r "${{ github.event.repository.name }}-${{ github.ref_name }}.zip" "${{ github.event.repository.name }}-${{ github.ref_name }}"
+      - name: Zip plugin for Github release
+        if: github.ref_type == 'tag'
+        run: |
+          mv apps/hue_control/dog.clockwork.hue.cogsplugin dog.clockwork.hue.cogsplugin
+          zip -r "dog.clockwork.hue.cogsplugin-${{ github.ref_name }}.zip" dog.clockwork.hue.cogsplugin
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: github.ref_type == 'tag'
         with:
-          files: "${{ github.event.repository.name }}-${{ github.ref_name }}.zip"
+          files: |
+            ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
+            dog.clockwork.hue.cogsplugin-${{ github.ref_name }}.zip
