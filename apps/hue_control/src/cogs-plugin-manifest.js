@@ -5,7 +5,8 @@ module.exports =
    */
   ({
     name: "Hue Control",
-    description: "Basic Hue controller",
+    description:
+      "Control Philips Hue lights and smart plugs via a Hue Bridge",
     icon: "lightbulb-on",
     version: "0.2.2",
     minCogsVersion: "5.11.0",
