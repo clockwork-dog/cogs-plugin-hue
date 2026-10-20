@@ -93,15 +93,9 @@ jobs:
         run: |
           mv apps/hue_control/dog.clockwork.hue.cogsplugin dog.clockwork.hue.cogsplugin
           zip -r "dog.clockwork.hue.cogsplugin-${{ github.ref_name }}.zip" dog.clockwork.hue.cogsplugin
-      - name: Zip test project for Github release
-        if: github.ref_type == 'tag'
-        run: |
-          mv test-project-pack-no-symlinks "${{ github.event.repository.name }}-${{ github.ref_name }}"
-          zip -r "${{ github.event.repository.name }}-${{ github.ref_name }}.zip" "${{ github.event.repository.name }}-${{ github.ref_name }}"
       - name: Release
         uses: softprops/action-gh-release@v3
         if: github.ref_type == 'tag'
         with:
           files: |
             dog.clockwork.hue.cogsplugin-${{ github.ref_name }}.zip
-            ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
