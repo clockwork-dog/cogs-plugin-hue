@@ -7,7 +7,7 @@ module.exports =
     name: "Hue Control",
     description: "Basic Hue controller",
     icon: "lightbulb-on",
-    version: "0.2.2",
+    version: "1.0.1",
     minCogsVersion: "5.11.0",
     permissions: {
       network: {
