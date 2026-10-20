@@ -64,6 +64,13 @@ jobs:
       # Checkout and run the build
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build-environment
+      # Set the manifest version from the release tag (e.g. v1.2.3 -> 1.2.3)
+      - name: Set manifest version from tag
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sed -i -E "s/^(\s*version: )\"[^\"]*\"/\1\"${VERSION}\"/" apps/hue_control/src/cogs-plugin-manifest.js
+          grep -q "version: \"${VERSION}\"" apps/hue_control/src/cogs-plugin-manifest.js
       - run: yarn run build
       - name: Sign plugin
         run: npx -y @clockworkdog/cogs-plugin-verification@3.2 sign apps/hue_control/dog.clockwork.hue.cogsplugin
